@@ -1,0 +1,156 @@
+/* RFID Attendance System - Responsive Stylesheet */
+
+/* Extra small devices (phones, less than 576px) */
+@media (max-width: 575.98px) {
+    .sidebar {
+        position: static;
+        height: auto;
+        padding-bottom: 15px;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        padding-top: 10px;
+    }
+    
+    .stat-card {
+        margin-bottom: 15px;
+    }
+    
+    .stat-card .stat-value {
+        font-size: 28px;
+    }
+    
+    .card-title {
+        font-size: 18px;
+    }
+    
+    .table-responsive {
+        font-size: 14px;
+    }
+    
+    .btn-group-sm > .btn {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.75rem;
+    }
+    
+    .activity-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .activity-icon {
+        margin-bottom: 10px;
+    }
+    
+    .login-container {
+        margin: 50px auto;
+        padding: 20px;
+    }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .sidebar {
+        position: static;
+        height: auto;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+    }
+    
+    .stat-card .stat-value {
+        font-size: 32px;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .sidebar {
+        width: 200px !important;
+    }
+    
+    .main-content {
+        margin-left: 200px !important;
+    }
+    
+    .sidebar .nav-link {
+        padding: 8px 12px;
+        margin: 4px 10px;
+        font-size: 14px;
+    }
+    
+    .sidebar .nav-link i {
+        margin-right: 8px;
+    }
+    
+    .stat-card .stat-value {
+        font-size: 30px;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .sidebar {
+        width: 220px !important;
+    }
+    
+    .main-content {
+        margin-left: 220px !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .sidebar, .navbar, .btn-toolbar, .no-print {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+    
+    body {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        background-color: white !important;
+    }
+    
+    .card-header {
+        background-color: #f8f9fa !important;
+        color: black !important;
+        border-bottom: 1px solid #ddd !important;
+    }
+    
+    .table {
+        color: black !important;
+    }
+    
+    .table-dark {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    .table-dark th, .table-dark td {
+        border-color: #ddd !important;
+    }
+    
+    .text-light {
+        color: black !important;
+    }
+    
+    .bg-dark {
+        background-color: white !important;
+    }
+    
+    .border-secondary {
+        border-color: #ddd !important;
+    }
+}

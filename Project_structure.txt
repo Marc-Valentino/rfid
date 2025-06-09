@@ -1,0 +1,41 @@
+rfid-attendance-system/
+├── config/
+│   ├── database.php
+│   └── config.php
+├── assets/
+│   ├── css/
+│   │   ├── style.css
+│   │   ├── dashboard.css
+│   │   └── responsive.css
+│   ├── js/
+│   │   ├── main.js
+│   │   ├── dashboard.js
+│   │   └── rfid-reader.js
+│   └── images/
+│       └── logo.png
+├── includes/
+│   ├── header.php
+│   ├── footer.php
+│   ├── sidebar.php
+│   └── functions.php
+├── admin/
+│   ├── index.php
+│   ├── dashboard.php
+│   ├── students.php
+│   ├── add-student.php
+│   ├── edit-student.php
+│   ├── attendance.php
+│   ├── reports.php
+│   ├── rfid-cards.php
+│   └── settings.php
+├── api/
+│   ├── rfid-scan.php
+│   ├── get-attendance.php
+│   ├── student-data.php
+│   └── reports-data.php
+├── database/
+│   └── rfid_attendance.sql
+├── login.php
+├── logout.php
+├── index.php
+└── README.md
