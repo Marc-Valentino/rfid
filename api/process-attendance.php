@@ -1,5 +1,4 @@
 <?php
-<?php
 session_start();
 require_once '../config/config.php';
 require_once '../includes/functions.php';
@@ -87,4 +86,54 @@ if (isset($input['rfid_uid'])) {
         'success' => false,
         'message' => 'Invalid input data'
     ]);
+}
+
+require_once '../config/database.php';
+
+$data = json_decode(file_get_contents('php://input'), true);
+$rfid_uid = $data['rfid_uid'] ?? '';
+$course_id = $data['course_id'] ?? null;
+$attendance_type = $data['attendance_type'] ?? 'Time In';
+
+if (empty($rfid_uid)) {
+    echo json_encode(['success' => false, 'message' => 'RFID UID is required']);
+    exit;
+}
+
+// Get student information
+$stmt = $conn->prepare("
+    SELECT s.*, d.department_name, c.course_name 
+    FROM students s 
+    LEFT JOIN rfid_cards r ON s.student_id = r.student_id
+    LEFT JOIN departments d ON s.department_id = d.department_id
+    LEFT JOIN courses c ON s.course_id = c.course_id
+    WHERE r.rfid_uid = ?
+");
+$stmt->bind_param("s", $rfid_uid);
+$stmt->execute();
+$result = $stmt->get_result();
+$student = $result->fetch_assoc();
+
+if (!$student) {
+    echo json_encode(['success' => false, 'message' => 'Student not found']);
+    exit;
+}
+
+// Record attendance
+$stmt = $conn->prepare("
+    INSERT INTO attendance_records 
+    (student_id, rfid_uid, attendance_type, attendance_date, course_id, location, verification_status) 
+    VALUES (?, ?, ?, CURDATE(), ?, 'Classroom', 'Verified')
+");
+$stmt->bind_param("issi", $student['student_id'], $rfid_uid, $attendance_type, $course_id);
+
+if ($stmt->execute()) {
+    echo json_encode([
+        'success' => true,
+        'message' => 'Attendance recorded successfully',
+        'student_name' => $student['first_name'] . ' ' . $student['last_name'],
+        'student_number' => $student['student_number']
+    ]);
+} else {
+    echo json_encode(['success' => false, 'message' => 'Error recording attendance']);
 }
