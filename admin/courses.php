@@ -219,7 +219,13 @@ try {
                         <i class="fas fa-users me-2"></i>Students
                     </a>
                     <a class="nav-link active" href="courses.php">
-                        <i class="fas fa-book me-2"></i>Courses
+                        <i class="fas fa-book me-2"></i>Subjects
+                    </a>
+                    <a class="nav-link" href="departments.php">
+                        <i class="fas fa-building me-2"></i>Departments
+                    </a>
+                    <a class="nav-link" href="events.php">
+                        <i class="fas fa-calendar me-2"></i>Events
                     </a>
                     <a class="nav-link" href="register-instructor.php">
                         <i class="fas fa-chalkboard-teacher me-2"></i>Instructors
@@ -251,6 +257,9 @@ try {
                         <a class="nav-link text-light" href="scan-rfid.php">
                             <i class="fas fa-wifi me-2"></i>Scan RFID
                         </a>
+                        <a class="nav-link text-light" href="activity-logs.php">
+                            <i class="fas fa-history me-2"></i>Activity Logs
+                        </a>
                     </div>
                     
                     <hr class="text-secondary">
@@ -264,7 +273,7 @@ try {
             <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Manage Courses</h1>
+                    <h1 class="h2">Manage Subjects</h1>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCourseModal">
                         <i class="fas fa-plus me-2"></i>Add Course
                     </button>
@@ -491,16 +500,41 @@ try {
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script>
     // Initialize Bootstrap components
     document.addEventListener('DOMContentLoaded', function() {
         // Make sure Bootstrap is properly loaded
         if (typeof bootstrap === 'undefined') {
             console.error('Bootstrap is not loaded!');
+            // Show error to user
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger position-fixed top-0 start-50 translate-middle-x mt-3';
+            alertDiv.role = 'alert';
+            alertDiv.innerHTML = '<strong>Error:</strong> Bootstrap failed to load. Some features may not work correctly.';
+            document.body.prepend(alertDiv);
+            
+            // Auto-hide the alert after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
         } else {
             console.log('Bootstrap is loaded successfully');
+            
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Initialize popovers
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
         }
     });
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    </script>
     <script>
     function editCourse(courseId) {
         console.log('Edit course clicked for ID:', courseId); // Debug log

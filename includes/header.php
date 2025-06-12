@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?>RFID Attendance System</title>
+    <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?>EVENTRACK - Event Attendance System</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,7 +19,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-black fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="<?php echo BASE_URL; ?>/admin/dashboard.php">
-                <i class="fas fa-id-card me-2"></i>RFID Attendance
+                <i class="fas fa-calendar-check me-2"></i>EVENTRACK
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

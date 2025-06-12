@@ -6,7 +6,7 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 
 // Application settings
-define('APP_NAME', 'RFID Attendance System');
+define('APP_NAME', 'EVENTRACK');
 define('APP_VERSION', '1.0.0');
 define('APP_URL', 'http://localhost/rfid');
 define('BASE_URL', 'http://localhost/rfid'); // Add this line after APP_URL

@@ -55,6 +55,11 @@
                         <i class="fas fa-wifi me-2"></i>Scan RFID
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light <?php echo basename($_SERVER['PHP_SELF']) == 'activity-logs.php' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>/admin/activity-logs.php">
+                        <i class="fas fa-history me-2"></i>Activity Logs
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

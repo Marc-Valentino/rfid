@@ -2,6 +2,11 @@
 // Start the session first
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+    
+    // Initialize CSRF token if not set
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
 }
 
 // Include required files
@@ -79,7 +84,8 @@ $departments = $db->query($dept_sql)->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Students Management - <?php echo APP_NAME; ?></title>
+    <meta name="csrf-token" content="<?php echo $_SESSION['csrf_token'] ?? ''; ?>">
+    <title>Students Management - <?php echo APP_NAME; ?> - Event Attendance</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -168,8 +174,8 @@ $departments = $db->query($dept_sql)->fetchAll();
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 sidebar p-3">
                 <div class="text-center mb-4">
-                    <i class="fas fa-id-card-alt fa-2x text-primary mb-2"></i>
-                    <h5>RFID System</h5>
+                    <i class="fas fa-calendar-check fa-2x text-primary mb-2"></i>
+                    <h5>EVENTRACK</h5>
                     <small class="text-muted">Welcome, <?php echo $_SESSION['full_name']; ?></small>
                 </div>
                 
@@ -181,7 +187,13 @@ $departments = $db->query($dept_sql)->fetchAll();
                         <i class="fas fa-users me-2"></i>Students
                     </a>
                     <a class="nav-link" href="courses.php">
-                        <i class="fas fa-book me-2"></i>Courses
+                        <i class="fas fa-book me-2"></i>Subjects
+                    </a>
+                    <a class="nav-link" href="departments.php">
+                        <i class="fas fa-building me-2"></i>Departments
+                    </a>
+                    <a class="nav-link" href="events.php">
+                        <i class="fas fa-calendar me-2"></i>Events
                     </a>
                     <a class="nav-link" href="register-instructor.php">
                         <i class="fas fa-chalkboard-teacher me-2"></i>Instructors
@@ -214,6 +226,9 @@ $departments = $db->query($dept_sql)->fetchAll();
                         </a>
                         <a class="nav-link text-light" href="scan-rfid.php">
                             <i class="fas fa-wifi me-2"></i>Scan RFID
+                        </a>
+                        <a class="nav-link text-light" href="activity-logs.php">
+                            <i class="fas fa-history me-2"></i>Activity Logs
                         </a>
                     </div>
                     
@@ -360,12 +375,11 @@ $departments = $db->query($dept_sql)->fetchAll();
                                                            data-rfid-status="<?php echo $student['rfid_uid'] ? $student['card_status'] : 'No Card'; ?>">
                                                             <i class="fas fa-eye"></i>
                                                         </a>
-                                                        <form method="POST" class="d-inline" onsubmit="return confirmDelete(event)">
-                                                            <input type="hidden" name="student_id" value="<?php echo $student['student_id']; ?>">
-                                                            <button type="submit" name="delete" class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </form>
+                                                        <button type="button" class="btn btn-outline-danger btn-sm delete-student" 
+                                                                data-student-id="<?php echo $student['student_id']; ?>"
+                                                                title="Delete">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -459,9 +473,100 @@ $departments = $db->query($dept_sql)->fetchAll();
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Student Modal Functionality
+        // Delete confirmation and AJAX handling
+        function deleteStudent(studentId, button) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const row = button.closest('tr');
+                    const originalContent = button.innerHTML;
+                    
+                    // Show loading state
+                    button.disabled = true;
+                    button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+                    
+                    // Get CSRF token from meta tag
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                    
+                    // Send delete request
+                    fetch('delete-student.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: 'student_id=' + encodeURIComponent(studentId) + '&csrf_token=' + encodeURIComponent(csrfToken)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Remove the row from the table
+                            row.style.transition = 'opacity 0.3s';
+                            row.style.opacity = '0';
+                            
+                            setTimeout(() => {
+                                row.remove();
+                                
+                                // Show success message
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Student has been deleted.',
+                                    'success'
+                                );
+                                
+                                // If no more rows, show empty state
+                                if (document.querySelectorAll('tbody tr').length === 0) {
+                                    const tbody = document.querySelector('tbody');
+                                    tbody.innerHTML = `
+                                        <tr>
+                                            <td colspan="9" class="text-center py-4">
+                                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                                <p class="text-muted">No students found</p>
+                                            </td>
+                                        </tr>`;
+                                }
+                            }, 300);
+                        } else {
+                            throw new Error(data.message || 'Failed to delete student');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        button.disabled = false;
+                        button.innerHTML = originalContent;
+                        
+                        Swal.fire(
+                            'Error!',
+                            error.message || 'Failed to delete student.',
+                            'error'
+                        );
+                    });
+                }
+            });
+        }
+
+        // Initialize delete buttons
         document.addEventListener('DOMContentLoaded', function() {
+            // Handle delete button clicks
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.delete-student')) {
+                    const button = e.target.closest('.delete-student');
+                    const studentId = button.getAttribute('data-student-id');
+                    deleteStudent(studentId, button);
+                }
+            });
+            
+            // Student Modal Functionality
             const studentModal = document.getElementById('studentModal');
             if (studentModal) {
                 studentModal.addEventListener('show.bs.modal', function(event) {
@@ -512,40 +617,5 @@ $departments = $db->query($dept_sql)->fetchAll();
 </html>
 
 <?php
-// Handle delete action
-if (isset($_POST['delete']) && isset($_POST['student_id'])) {
-    $student_id = filter_input(INPUT_POST, 'student_id', FILTER_VALIDATE_INT);
-    if ($student_id) {
-        try {
-            $db->beginTransaction();
-            
-            // Delete related records first (order matters due to foreign key constraints)
-            $tables = ['attendance_records', 'daily_attendance_summary', 'course_enrollments', 'rfid_cards'];
-            foreach ($tables as $table) {
-                $stmt = $db->prepare("DELETE FROM {$table} WHERE student_id = ?");
-                $stmt->execute([$student_id]);
-            }
-            
-            // Finally delete the student
-            $stmt = $db->prepare("DELETE FROM students WHERE student_id = ?");
-            $stmt->execute([$student_id]);
-            
-            // Log the deletion
-            $stmt = $db->prepare("INSERT INTO activity_logs (user_id, action, table_name, record_id, ip_address, user_agent) 
-                                VALUES (?, 'DELETE', 'students', ?, ?, ?)");
-            $stmt->execute([$_SESSION['user_id'], $student_id, $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT']]);
-            
-            $db->commit();
-            $_SESSION['success'] = "Student has been deleted successfully!";
-            
-        } catch (Exception $e) {
-            $db->rollBack();
-            $_SESSION['error'] = "Failed to delete student: " . $e->getMessage();
-        }
-    } else {
-        $_SESSION['error'] = "Invalid student ID provided";
-    }
-    
-    header('Location: students.php');
-    exit();
-}
+// Delete functionality has been moved to delete-student.php
+?>

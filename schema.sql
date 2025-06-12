@@ -39,7 +39,7 @@ CREATE TABLE `activity_logs` (
   KEY `idx_table_name` (`table_name`),
   KEY `idx_created_at` (`created_at`),
   CONSTRAINT `activity_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -48,7 +48,7 @@ CREATE TABLE `activity_logs` (
 
 LOCK TABLES `activity_logs` WRITE;
 /*!40000 ALTER TABLE `activity_logs` DISABLE KEYS */;
-INSERT INTO `activity_logs` VALUES (1,1,'CREATE','students',3,NULL,'{\"student_number\":\"123\",\"name\":\"Rodmarc Villaflores\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36','2025-05-29 18:38:50'),(2,NULL,'CREATE','students',4,NULL,'{\"student_number\":\"2022-31566\",\"name\":\"Mariane Bejemino\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36','2025-05-30 14:41:35'),(3,1,'CREATE','students',5,NULL,'{\"student_number\":\"3\",\"name\":\"Jhon Nudalo\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-04 05:55:17'),(4,1,'CREATE','students',6,NULL,'{\"student_number\":\"4\",\"name\":\"Shan Gatdula\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-04 05:57:36'),(5,1,'CREATE','students',7,NULL,'{\"student_number\":\"5\",\"name\":\"Drexler Torres\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-04 05:58:31'),(6,1,'CREATE','students',8,NULL,'{\"student_number\":\"6\",\"name\":\"Arah Abajon\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-04 05:59:21'),(7,1,'CREATE','students',9,NULL,'{\"student_number\":\"7\",\"name\":\"Kean Maglasang\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-04 05:59:56'),(8,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\"}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 16:06:53'),(9,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\"}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 16:08:10'),(10,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\"}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 16:16:03'),(11,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\"}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 16:24:59'),(12,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":4,\"deleted_records\":[{\"attendance_id\":57,\"student_id\":6,\"rfid_uid\":\"3870270324\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:25:04\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:25:04\"},{\"attendance_id\":58,\"student_id\":5,\"rfid_uid\":\"3871093636\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:29:12\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:29:12\"},{\"attendance_id\":59,\"student_id\":9,\"rfid_uid\":\"3870442404\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:29:17\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:29:17\"},{\"attendance_id\":60,\"student_id\":7,\"rfid_uid\":\"3870578740\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:29:24\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:29:24\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 16:38:00'),(13,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":3,\"deleted_records\":[{\"attendance_id\":61,\"student_id\":6,\"rfid_uid\":\"3870270324\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:39:55\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:39:55\"},{\"attendance_id\":62,\"student_id\":3,\"rfid_uid\":\"3870143476\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:40:00\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:40:00\"},{\"attendance_id\":63,\"student_id\":3,\"rfid_uid\":\"3870143476\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:41:16\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:41:16\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 16:41:26'),(14,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":1,\"deleted_records\":[{\"attendance_id\":64,\"student_id\":3,\"rfid_uid\":\"3870143476\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:42:09\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:42:09\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 16:42:41'),(15,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":1,\"deleted_records\":[{\"attendance_id\":65,\"student_id\":3,\"rfid_uid\":\"3870143476\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:42:46\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:42:46\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 16:46:51'),(16,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":1,\"deleted_records\":[{\"attendance_id\":66,\"student_id\":9,\"rfid_uid\":\"3870442404\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:46:57\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:46:57\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 16:47:25'),(17,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":1,\"deleted_records\":[{\"attendance_id\":67,\"student_id\":9,\"rfid_uid\":\"3870442404\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:48:30\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:48:30\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 16:52:49'),(18,NULL,'REGISTER_STUDENT','students',10,NULL,'{\"student_number\":\"123\",\"rfid_uid\":\"3870459140\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 16:55:21'),(19,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":4,\"deleted_records\":[{\"attendance_id\":68,\"student_id\":3,\"rfid_uid\":\"3870143476\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:54:18\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:54:18\"},{\"attendance_id\":69,\"student_id\":6,\"rfid_uid\":\"3870270324\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:54:44\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:54:44\"},{\"attendance_id\":70,\"student_id\":4,\"rfid_uid\":\"3871984500\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:54:47\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:54:47\"},{\"attendance_id\":71,\"student_id\":10,\"rfid_uid\":\"3870459140\",\"reader_id\":1,\"scan_time\":\"2025-06-10 00:55:21\",\"attendance_type\":\"Time In\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 00:55:21\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:05:20'),(20,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":5,\"deleted_records\":[{\"attendance_id\":72,\"student_id\":9,\"rfid_uid\":\"3870442404\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:05:35\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:05:35\"},{\"attendance_id\":73,\"student_id\":10,\"rfid_uid\":\"3870459140\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:07:01\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:07:01\"},{\"attendance_id\":74,\"student_id\":4,\"rfid_uid\":\"3871984500\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:07:06\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:07:06\"},{\"attendance_id\":75,\"student_id\":6,\"rfid_uid\":\"3870270324\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:07:08\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:07:08\"},{\"attendance_id\":76,\"student_id\":3,\"rfid_uid\":\"3870143476\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:07:09\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:07:09\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:07:32'),(21,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":7,\"deleted_records\":[{\"attendance_id\":77,\"student_id\":8,\"rfid_uid\":\"3870991668\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:37:44\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:37:44\"},{\"attendance_id\":78,\"student_id\":7,\"rfid_uid\":\"3870578740\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:37:47\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:37:47\"},{\"attendance_id\":79,\"student_id\":5,\"rfid_uid\":\"3871093636\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:37:49\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:37:49\"},{\"attendance_id\":80,\"student_id\":9,\"rfid_uid\":\"3870442404\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:37:50\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:37:50\"},{\"attendance_id\":81,\"student_id\":4,\"rfid_uid\":\"3871984500\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:37:56\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:37:56\"},{\"attendance_id\":82,\"student_id\":6,\"rfid_uid\":\"3870270324\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:37:58\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:37:58\"},{\"attendance_id\":83,\"student_id\":3,\"rfid_uid\":\"3870143476\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:38:00\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:38:00\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:38:12'),(22,1,'DELETE','students',10,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:38:45'),(23,NULL,'REGISTER_STUDENT','students',11,NULL,'{\"student_number\":\"123\",\"rfid_uid\":\"3871243332\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:39:22'),(24,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":2,\"deleted_records\":[{\"attendance_id\":84,\"student_id\":11,\"rfid_uid\":\"3871243332\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:39:22\",\"attendance_type\":\"Time In\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:39:22\"},{\"attendance_id\":85,\"student_id\":11,\"rfid_uid\":\"3871243332\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:39:57\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:39:57\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:40:34'),(25,1,'DELETE','students',11,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:41:31'),(26,NULL,'REGISTER_STUDENT','students',12,NULL,'{\"student_number\":\"123\",\"rfid_uid\":\"3871243332\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:46:40'),(27,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":1,\"deleted_records\":[{\"attendance_id\":86,\"student_id\":12,\"rfid_uid\":\"3871243332\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:46:40\",\"attendance_type\":\"Time In\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:46:40\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:49:03'),(28,1,'DELETE','students',12,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:49:12'),(29,NULL,'REGISTER_STUDENT','students',13,NULL,'{\"student_number\":\"123\",\"rfid_uid\":\"3871243332\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:49:45'),(30,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":1,\"deleted_records\":[{\"attendance_id\":87,\"student_id\":13,\"rfid_uid\":\"3871243332\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:49:45\",\"attendance_type\":\"Time In\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:49:45\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:50:17'),(31,1,'DELETE','students',13,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:50:23'),(32,1,'DELETE','students',13,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:50:27'),(33,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":1,\"deleted_records\":[{\"attendance_id\":88,\"student_id\":3,\"rfid_uid\":\"3870143476\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:53:29\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:53:29\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:53:45'),(34,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":1,\"deleted_records\":[{\"attendance_id\":89,\"student_id\":3,\"rfid_uid\":\"3870143476\",\"reader_id\":1,\"scan_time\":\"2025-06-10 01:54:21\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 01:54:21\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:54:38'),(35,NULL,'REGISTER_STUDENT','students',14,NULL,'{\"student_number\":\"8\",\"rfid_uid\":\"3871243332\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:58:44'),(36,1,'DELETE','students',14,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:59:54'),(37,1,'DELETE','students',9,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 17:59:59'),(38,1,'DELETE','students',8,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:00:02'),(39,1,'DELETE','students',8,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:00:04'),(40,1,'DELETE','students',7,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:00:06'),(41,1,'DELETE','students',6,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:00:07'),(42,1,'DELETE','students',5,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:00:12'),(43,1,'DELETE','students',4,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:00:14'),(44,1,'DELETE','students',3,NULL,NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:00:17'),(45,NULL,'REGISTER_STUDENT','students',15,NULL,'{\"student_number\":\"1\",\"rfid_uid\":\"3870270324\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:00:57'),(46,NULL,'REGISTER_STUDENT','students',16,NULL,'{\"student_number\":\"2\",\"rfid_uid\":\"3871984500\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:01:46'),(47,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":4,\"deleted_records\":[{\"attendance_id\":91,\"student_id\":15,\"rfid_uid\":\"3870270324\",\"reader_id\":1,\"scan_time\":\"2025-06-10 02:00:57\",\"attendance_type\":\"Time In\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 02:00:57\"},{\"attendance_id\":92,\"student_id\":16,\"rfid_uid\":\"3871984500\",\"reader_id\":1,\"scan_time\":\"2025-06-10 02:01:46\",\"attendance_type\":\"Time In\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 02:01:46\"},{\"attendance_id\":93,\"student_id\":16,\"rfid_uid\":\"3871984500\",\"reader_id\":1,\"scan_time\":\"2025-06-10 02:06:33\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 02:06:33\"},{\"attendance_id\":94,\"student_id\":15,\"rfid_uid\":\"3870270324\",\"reader_id\":1,\"scan_time\":\"2025-06-10 02:06:36\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 02:06:36\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:06:43'),(48,NULL,'REGISTER_STUDENT','students',17,NULL,'{\"student_number\":\"3\",\"rfid_uid\":\"3870442404\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:07:15'),(49,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":1,\"deleted_records\":[{\"attendance_id\":95,\"student_id\":17,\"rfid_uid\":\"3870442404\",\"reader_id\":1,\"scan_time\":\"2025-06-10 02:07:15\",\"attendance_type\":\"Time In\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 02:07:15\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:10:18'),(50,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":3,\"deleted_records\":[{\"attendance_id\":96,\"student_id\":15,\"rfid_uid\":\"3870270324\",\"reader_id\":1,\"scan_time\":\"2025-06-10 02:10:23\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 02:10:23\"},{\"attendance_id\":97,\"student_id\":17,\"rfid_uid\":\"3870442404\",\"reader_id\":1,\"scan_time\":\"2025-06-10 02:10:26\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 02:10:26\"},{\"attendance_id\":98,\"student_id\":16,\"rfid_uid\":\"3871984500\",\"reader_id\":1,\"scan_time\":\"2025-06-10 02:10:28\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 02:10:28\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:10:38'),(51,NULL,'REGISTER_STUDENT','students',18,NULL,'{\"student_number\":\"4\",\"rfid_uid\":\"3871243332\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:11:25'),(52,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":1,\"deleted_records\":[{\"attendance_id\":99,\"student_id\":18,\"rfid_uid\":\"3871243332\",\"reader_id\":1,\"scan_time\":\"2025-06-10 02:11:25\",\"attendance_type\":\"Time In\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 02:11:25\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:12:12'),(53,NULL,'REGISTER_STUDENT','students',19,NULL,'{\"student_number\":\"5\",\"rfid_uid\":\"3872589524\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:13:08'),(54,NULL,'REGISTER_STUDENT','students',20,NULL,'{\"student_number\":\"6\",\"rfid_uid\":\"3870459140\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:13:50'),(55,NULL,'REGISTER_STUDENT','students',21,NULL,'{\"student_number\":\"7\",\"rfid_uid\":\"3870143476\"}','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:14:21'),(56,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":3,\"deleted_records\":[{\"attendance_id\":100,\"student_id\":19,\"rfid_uid\":\"3872589524\",\"reader_id\":1,\"scan_time\":\"2025-06-10 02:13:08\",\"attendance_type\":\"Time In\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 02:13:08\"},{\"attendance_id\":101,\"student_id\":20,\"rfid_uid\":\"3870459140\",\"reader_id\":1,\"scan_time\":\"2025-06-10 02:13:50\",\"attendance_type\":\"Time In\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 02:13:50\"},{\"attendance_id\":102,\"student_id\":21,\"rfid_uid\":\"3870143476\",\"reader_id\":1,\"scan_time\":\"2025-06-10 02:14:21\",\"attendance_type\":\"Time In\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 02:14:21\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:14:47'),(57,1,'DELETE','attendance_records,daily_attendance_summary',NULL,'{\"date\":\"2025-06-10\",\"records_deleted\":1,\"deleted_records\":[{\"attendance_id\":103,\"student_id\":20,\"rfid_uid\":\"3870459140\",\"reader_id\":1,\"scan_time\":\"2025-06-10 02:15:10\",\"attendance_type\":\"\",\"attendance_date\":\"2025-06-10\",\"course_id\":null,\"subject_session\":null,\"location\":\"Main Entrance\",\"verification_status\":\"Verified\",\"notes\":null,\"ip_address\":\"::1\",\"user_agent\":null,\"created_at\":\"2025-06-10 02:15:10\"}]}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-09 18:15:36');
+INSERT INTO `activity_logs` VALUES (1,1,'clear','activity_logs',NULL,'{\"count\":154}',NULL,'::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36','2025-06-12 01:19:21');
 /*!40000 ALTER TABLE `activity_logs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -108,7 +108,7 @@ CREATE TABLE `attendance_records` (
   `rfid_uid` varchar(50) NOT NULL,
   `reader_id` int(11) DEFAULT NULL,
   `scan_time` timestamp NOT NULL DEFAULT current_timestamp(),
-  `attendance_type` enum('Time In','Time Out') NOT NULL DEFAULT 'Time In',
+  `attendance_type` enum('Time In','Time Out') NOT NULL,
   `attendance_date` date NOT NULL,
   `course_id` int(11) DEFAULT NULL,
   `subject_session` varchar(100) DEFAULT NULL,
@@ -130,7 +130,7 @@ CREATE TABLE `attendance_records` (
   CONSTRAINT `attendance_records_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE,
   CONSTRAINT `attendance_records_ibfk_2` FOREIGN KEY (`reader_id`) REFERENCES `rfid_readers` (`reader_id`) ON DELETE SET NULL,
   CONSTRAINT `attendance_records_ibfk_3` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -139,7 +139,7 @@ CREATE TABLE `attendance_records` (
 
 LOCK TABLES `attendance_records` WRITE;
 /*!40000 ALTER TABLE `attendance_records` DISABLE KEYS */;
-INSERT INTO `attendance_records` VALUES (104,20,'3870459140',1,'2025-06-09 18:15:44','','2025-06-10',NULL,NULL,'Main Entrance','Verified',NULL,'::1',NULL,'2025-06-09 18:15:44');
+INSERT INTO `attendance_records` VALUES (211,21,'3870143476',1,'2025-06-11 11:11:48','Time In','2025-06-11',NULL,NULL,'Main Entrance','Verified',NULL,'::1',NULL,'2025-06-11 11:11:48');
 /*!40000 ALTER TABLE `attendance_records` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -272,7 +272,7 @@ CREATE TABLE `course_enrollments` (
   CONSTRAINT `course_enrollments_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE,
   CONSTRAINT `course_enrollments_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`) ON DELETE CASCADE,
   CONSTRAINT `course_enrollments_ibfk_3` FOREIGN KEY (`instructor_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -281,6 +281,7 @@ CREATE TABLE `course_enrollments` (
 
 LOCK TABLES `course_enrollments` WRITE;
 /*!40000 ALTER TABLE `course_enrollments` DISABLE KEYS */;
+INSERT INTO `course_enrollments` VALUES (16,21,24,14,'2025-06-10','Active',NULL,'2025-06-10 02:22:08','2025-06-10 02:22:08'),(17,20,24,14,'2025-06-10','Active',NULL,'2025-06-10 02:22:16','2025-06-10 02:22:16'),(18,18,24,14,'2025-06-10','Active',NULL,'2025-06-10 02:22:18','2025-06-10 02:22:18'),(19,17,10,14,'2025-06-10','Active',NULL,'2025-06-10 02:22:25','2025-06-10 02:22:25'),(20,16,24,14,'2025-06-10','Active',NULL,'2025-06-10 02:22:37','2025-06-10 02:22:37'),(21,19,10,14,'2025-06-10','Active',NULL,'2025-06-10 02:22:42','2025-06-10 02:22:42'),(22,15,10,14,'2025-06-10','Active',NULL,'2025-06-10 02:22:46','2025-06-10 02:22:46');
 /*!40000 ALTER TABLE `course_enrollments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -347,7 +348,7 @@ CREATE TABLE `daily_attendance_summary` (
   KEY `idx_attendance_status` (`attendance_status`),
   CONSTRAINT `daily_attendance_summary_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE,
   CONSTRAINT `daily_attendance_summary_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=208 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -356,7 +357,7 @@ CREATE TABLE `daily_attendance_summary` (
 
 LOCK TABLES `daily_attendance_summary` WRITE;
 /*!40000 ALTER TABLE `daily_attendance_summary` DISABLE KEYS */;
-INSERT INTO `daily_attendance_summary` VALUES (103,20,'2025-06-10','02:15:44',NULL,0.00,0.00,'Present',0,NULL,'2025-06-09 18:15:44','2025-06-09 18:15:44');
+INSERT INTO `daily_attendance_summary` VALUES (207,21,'2025-06-11','19:11:48',NULL,0.00,0.00,'Present',0,NULL,'2025-06-11 11:11:48','2025-06-11 11:11:48');
 /*!40000 ALTER TABLE `daily_attendance_summary` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -388,6 +389,183 @@ LOCK TABLES `departments` WRITE;
 /*!40000 ALTER TABLE `departments` DISABLE KEYS */;
 INSERT INTO `departments` VALUES (1,'Information Technology','IT','Fritz Aseo',1,'2025-05-26 16:15:36','2025-05-26 16:15:36');
 /*!40000 ALTER TABLE `departments` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `event_attendance`
+--
+
+DROP TABLE IF EXISTS `event_attendance`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `event_attendance` (
+  `attendance_id` int(11) NOT NULL AUTO_INCREMENT,
+  `event_id` int(11) NOT NULL,
+  `day_id` int(11) DEFAULT NULL,
+  `student_id` int(11) NOT NULL,
+  `time_in` datetime NOT NULL,
+  `time_out` datetime DEFAULT NULL,
+  `attendance_status` enum('Present','Absent','Late','Excused') DEFAULT 'Present',
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`attendance_id`),
+  UNIQUE KEY `unique_event_attendance` (`event_id`,`day_id`,`student_id`),
+  KEY `day_id` (`day_id`),
+  KEY `idx_event_attendance_student` (`student_id`),
+  KEY `idx_event_attendance_event` (`event_id`,`day_id`),
+  CONSTRAINT `event_attendance_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`event_id`) ON DELETE CASCADE,
+  CONSTRAINT `event_attendance_ibfk_2` FOREIGN KEY (`day_id`) REFERENCES `event_days` (`day_id`) ON DELETE SET NULL,
+  CONSTRAINT `event_attendance_ibfk_3` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `event_attendance`
+--
+
+LOCK TABLES `event_attendance` WRITE;
+/*!40000 ALTER TABLE `event_attendance` DISABLE KEYS */;
+/*!40000 ALTER TABLE `event_attendance` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `event_days`
+--
+
+DROP TABLE IF EXISTS `event_days`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `event_days` (
+  `day_id` int(11) NOT NULL AUTO_INCREMENT,
+  `event_id` int(11) NOT NULL,
+  `day_number` int(11) DEFAULT NULL,
+  `day_name` varchar(20) DEFAULT NULL,
+  `event_date` date NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`day_id`),
+  UNIQUE KEY `unique_event_day` (`event_id`,`event_date`),
+  CONSTRAINT `event_days_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`event_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `event_days`
+--
+
+LOCK TABLES `event_days` WRITE;
+/*!40000 ALTER TABLE `event_days` DISABLE KEYS */;
+/*!40000 ALTER TABLE `event_days` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `event_registrations`
+--
+
+DROP TABLE IF EXISTS `event_registrations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `event_registrations` (
+  `registration_id` int(11) NOT NULL AUTO_INCREMENT,
+  `event_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `registration_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `registration_status` enum('Pending','Confirmed','Cancelled','Waitlisted') DEFAULT 'Pending',
+  `attendance_status` enum('Registered','Attended','No Show') DEFAULT 'Registered',
+  `check_in_time` datetime DEFAULT NULL,
+  `check_out_time` datetime DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`registration_id`),
+  UNIQUE KEY `unique_event_student` (`event_id`,`student_id`),
+  KEY `student_id` (`student_id`),
+  KEY `idx_event_registrations` (`event_id`,`registration_status`),
+  CONSTRAINT `event_registrations_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`event_id`) ON DELETE CASCADE,
+  CONSTRAINT `event_registrations_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `event_registrations`
+--
+
+LOCK TABLES `event_registrations` WRITE;
+/*!40000 ALTER TABLE `event_registrations` DISABLE KEYS */;
+/*!40000 ALTER TABLE `event_registrations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `event_types`
+--
+
+DROP TABLE IF EXISTS `event_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `event_types` (
+  `type_id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(50) NOT NULL,
+  `description` text DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`type_id`),
+  UNIQUE KEY `unique_type_name` (`type_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `event_types`
+--
+
+LOCK TABLES `event_types` WRITE;
+/*!40000 ALTER TABLE `event_types` DISABLE KEYS */;
+INSERT INTO `event_types` VALUES (1,'Seminar','Academic or professional seminar',1,'2025-06-12 01:47:40','2025-06-12 01:47:40'),(2,'Workshop','Hands-on training workshop',1,'2025-06-12 01:47:40','2025-06-12 01:47:40'),(3,'Conference','Professional conference',1,'2025-06-12 01:47:40','2025-06-12 01:47:40'),(4,'Sports Event','Athletic competition or sports day',1,'2025-06-12 01:47:40','2025-06-12 01:47:40'),(5,'Cultural Event','Cultural or artistic performance',1,'2025-06-12 01:47:40','2025-06-12 01:47:40'),(6,'Orientation','Student or employee orientation',1,'2025-06-12 01:47:40','2025-06-12 01:47:40'),(7,'Meeting','General meeting',1,'2025-06-12 01:47:40','2025-06-12 01:47:40'),(8,'Other','Other type of event',1,'2025-06-12 01:47:40','2025-06-12 01:47:40');
+/*!40000 ALTER TABLE `event_types` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `events`
+--
+
+DROP TABLE IF EXISTS `events`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `events` (
+  `event_id` int(11) NOT NULL AUTO_INCREMENT,
+  `event_name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `location` varchar(100) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `type_id` int(11) DEFAULT NULL,
+  `max_participants` int(11) DEFAULT NULL,
+  `registration_deadline` datetime DEFAULT NULL,
+  `is_public` tinyint(1) DEFAULT 1,
+  `organizer_id` int(11) DEFAULT NULL,
+  `contact_email` varchar(100) DEFAULT NULL,
+  `contact_phone` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`event_id`),
+  KEY `type_id` (`type_id`),
+  KEY `organizer_id` (`organizer_id`),
+  KEY `idx_events_dates` (`start_date`,`end_date`),
+  CONSTRAINT `events_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `event_types` (`type_id`) ON DELETE SET NULL,
+  CONSTRAINT `events_ibfk_2` FOREIGN KEY (`organizer_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `events`
+--
+
+LOCK TABLES `events` WRITE;
+/*!40000 ALTER TABLE `events` DISABLE KEYS */;
+/*!40000 ALTER TABLE `events` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -503,7 +681,7 @@ CREATE TABLE `rfid_cards` (
   UNIQUE KEY `student_id` (`student_id`),
   KEY `idx_rfid_uid` (`rfid_uid`),
   CONSTRAINT `rfid_cards_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -512,7 +690,7 @@ CREATE TABLE `rfid_cards` (
 
 LOCK TABLES `rfid_cards` WRITE;
 /*!40000 ALTER TABLE `rfid_cards` DISABLE KEYS */;
-INSERT INTO `rfid_cards` VALUES (25,'3870270324',NULL,15,'Active','2025-06-10',NULL,'2025-06-09 18:10:23','2025-06-09 18:10:23',NULL,1,'2025-06-09 18:00:56','2025-06-09 18:10:23'),(26,'3871984500',NULL,16,'Active','2025-06-10',NULL,'2025-06-09 18:10:28','2025-06-09 18:10:28',NULL,1,'2025-06-09 18:01:46','2025-06-09 18:10:28'),(27,'3870442404',NULL,17,'Active','2025-06-10',NULL,'2025-06-09 18:10:26','2025-06-09 18:10:26',NULL,1,'2025-06-09 18:07:15','2025-06-09 18:10:26'),(28,'3871243332',NULL,18,'Active','2025-06-10',NULL,'2025-06-09 18:11:25','2025-06-09 18:11:25',NULL,1,'2025-06-09 18:11:25','2025-06-09 18:11:25'),(29,'3872589524',NULL,19,'Active','2025-06-10',NULL,'2025-06-09 18:13:08','2025-06-09 18:13:08',NULL,1,'2025-06-09 18:13:08','2025-06-09 18:13:08'),(30,'3870459140',NULL,20,'Active','2025-06-10',NULL,'2025-06-09 18:15:44','2025-06-09 18:15:44',NULL,1,'2025-06-09 18:13:50','2025-06-09 18:15:44'),(31,'3870143476',NULL,21,'Active','2025-06-10',NULL,'2025-06-09 18:14:21','2025-06-09 18:14:21',NULL,1,'2025-06-09 18:14:21','2025-06-09 18:14:21');
+INSERT INTO `rfid_cards` VALUES (25,'3870270324',NULL,15,'Active','2025-06-10',NULL,'2025-06-11 07:11:09','2025-06-11 07:11:09',NULL,1,'2025-06-09 18:00:56','2025-06-11 07:11:09'),(26,'3871984500',NULL,16,'Active','2025-06-10',NULL,'2025-06-11 07:11:05','2025-06-11 07:11:05',NULL,1,'2025-06-09 18:01:46','2025-06-11 07:11:05'),(27,'3870442404',NULL,17,'Active','2025-06-10',NULL,'2025-06-11 07:22:16','2025-06-11 10:49:45',NULL,1,'2025-06-09 18:07:15','2025-06-11 10:49:45'),(28,'3871243332',NULL,18,'Active','2025-06-10',NULL,'2025-06-11 07:10:56','2025-06-11 07:10:56',NULL,1,'2025-06-09 18:11:25','2025-06-11 07:10:56'),(29,'3872589524',NULL,19,'Active','2025-06-10',NULL,'2025-06-11 07:11:07','2025-06-11 07:11:07',NULL,1,'2025-06-09 18:13:08','2025-06-11 07:11:07'),(30,'3870459140',NULL,20,'Active','2025-06-10',NULL,'2025-06-11 07:10:46','2025-06-11 07:10:46',NULL,1,'2025-06-09 18:13:50','2025-06-11 07:10:46'),(31,'3870143476',NULL,21,'Active','2025-06-10',NULL,'2025-06-11 11:11:48','2025-06-11 11:11:48',NULL,1,'2025-06-09 18:14:21','2025-06-11 11:11:48');
 /*!40000 ALTER TABLE `rfid_cards` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -634,6 +812,7 @@ CREATE TABLE `students` (
   `year_level` enum('1st Year','2nd Year','3rd Year','4th Year','5th Year') DEFAULT NULL,
   `enrollment_status` enum('Active','Inactive','Graduated','Dropped') DEFAULT 'Active',
   `profile_image` varchar(255) DEFAULT NULL,
+  `profile_image_path` varchar(255) DEFAULT NULL,
   `emergency_contact_name` varchar(100) DEFAULT NULL,
   `emergency_contact_phone` varchar(20) DEFAULT NULL,
   `guardian_name` varchar(100) DEFAULT NULL,
@@ -651,7 +830,7 @@ CREATE TABLE `students` (
   KEY `idx_enrollment_status` (`enrollment_status`),
   CONSTRAINT `students_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE SET NULL,
   CONSTRAINT `students_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -660,7 +839,7 @@ CREATE TABLE `students` (
 
 LOCK TABLES `students` WRITE;
 /*!40000 ALTER TABLE `students` DISABLE KEYS */;
-INSERT INTO `students` VALUES (15,'1','Rodmarc','Villaflores',NULL,'rodmarc.ariza.villaflores@gmail.com','09288964553',NULL,NULL,NULL,1,10,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:00:56','2025-06-09 18:00:56'),(16,'2','Jhon Carlo','Nudalo',NULL,'jc@gmail.com','09288964553',NULL,NULL,NULL,1,24,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:01:46','2025-06-09 18:01:46'),(17,'3','Kean Andre','Maglasang',NULL,'maglasang@gmail.com','09288964553',NULL,NULL,NULL,1,10,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:07:15','2025-06-09 18:07:15'),(18,'4','Princess Chantille','Gatdula',NULL,'pc@gmail.com','09288964553',NULL,NULL,NULL,1,24,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:11:25','2025-06-09 18:11:25'),(19,'5','Drexler','Torres',NULL,'torres@gmail.com','09288964553',NULL,NULL,NULL,1,10,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:13:08','2025-06-09 18:13:08'),(20,'6','Mariane','Bejemino',NULL,'bejemino@gmail.com','09288964553',NULL,NULL,NULL,1,24,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:13:50','2025-06-09 18:13:50'),(21,'7','Arah','Abajon',NULL,'abajon@gmail.com','09288964553',NULL,NULL,NULL,1,24,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:14:21','2025-06-09 18:14:21');
+INSERT INTO `students` VALUES (15,'1','Rodmarc','Villaflores',NULL,'rodmarc.ariza.villaflores@gmail.com','09288964553',NULL,NULL,NULL,1,10,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:00:56','2025-06-09 18:00:56'),(16,'2','Jhon Carlo','Nudalo',NULL,'jc@gmail.com','09288964553',NULL,NULL,NULL,1,24,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:01:46','2025-06-09 18:01:46'),(17,'3','Kean Andre','Maglasang',NULL,'maglasang@gmail.com','09288964553',NULL,NULL,NULL,1,10,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:07:15','2025-06-09 18:07:15'),(18,'4','Princess Chantille','Gatdula',NULL,'pc@gmail.com','09288964553',NULL,NULL,NULL,1,24,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:11:25','2025-06-09 18:11:25'),(19,'5','Drexler','Torres',NULL,'torres@gmail.com','09288964553',NULL,NULL,NULL,1,10,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:13:08','2025-06-09 18:13:08'),(20,'6','Mariane','Bejemino',NULL,'bejemino@gmail.com','09288964553',NULL,NULL,NULL,1,24,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:13:50','2025-06-09 18:13:50'),(21,'7','Arah','Abajon',NULL,'abajon@gmail.com','09288964553',NULL,NULL,NULL,1,24,'1st Year','Active',NULL,NULL,NULL,NULL,NULL,NULL,1,'2025-06-09 18:14:21','2025-06-09 18:14:21');
 /*!40000 ALTER TABLE `students` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -682,7 +861,7 @@ CREATE TABLE `system_settings` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`setting_id`),
   UNIQUE KEY `setting_key` (`setting_key`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -691,7 +870,7 @@ CREATE TABLE `system_settings` (
 
 LOCK TABLES `system_settings` WRITE;
 /*!40000 ALTER TABLE `system_settings` DISABLE KEYS */;
-INSERT INTO `system_settings` VALUES (1,'school_name','Eastern Visayas State University','Name of the educational institution','string',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(2,'attendance_grace_period','15','Grace period in minutes for late attendance','integer',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(3,'working_hours_start','08:00','Default start time for attendance','string',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(4,'working_hours_end','17:00','Default end time for attendance','string',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(5,'auto_logout_enabled','true','Enable automatic logout after time out scan','boolean',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(6,'email_notifications','true','Enable email notifications for attendance','boolean',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(7,'backup_frequency','daily','Database backup frequency','string',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(8,'session_timeout','3600','Session timeout in seconds','integer',1,'2025-05-26 16:15:36','2025-05-26 16:15:36');
+INSERT INTO `system_settings` VALUES (1,'school_name','Eastern Visayas State University','Name of the educational institution','string',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(2,'attendance_grace_period','15','Grace period in minutes for late attendance','integer',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(3,'working_hours_start','08:00','Default start time for attendance','string',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(4,'working_hours_end','17:00','Default end time for attendance','string',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(5,'auto_logout_enabled','true','Enable automatic logout after time out scan','boolean',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(6,'email_notifications','true','Enable email notifications for attendance','boolean',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(7,'backup_frequency','daily','Database backup frequency','string',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(8,'session_timeout','3600','Session timeout in seconds','integer',1,'2025-05-26 16:15:36','2025-05-26 16:15:36'),(11,'enable_attendance_notifications','true','Enable/Disable attendance notifications','boolean',1,'2025-06-12 01:47:39','2025-06-12 01:47:39'),(12,'enable_sound_notifications','true','Enable/Disable sound for notifications','boolean',1,'2025-06-12 01:47:39','2025-06-12 01:47:39'),(13,'default_event_duration_hours','8','Default event duration in hours','integer',1,'2025-06-12 01:47:39','2025-06-12 01:47:39'),(14,'default_attendance_grace_minutes','15','Grace period in minutes for late attendance','integer',1,'2025-06-12 01:47:39','2025-06-12 01:47:39'),(15,'enable_email_notifications','false','Enable/Disable email notifications','boolean',1,'2025-06-12 01:47:39','2025-06-12 01:47:39'),(16,'enable_event_registration','true','Enable/Disable event registration','boolean',1,'2025-06-12 01:47:39','2025-06-12 01:47:39'),(17,'require_event_registration','false','Require registration for events','boolean',1,'2025-06-12 01:47:39','2025-06-12 01:47:39'),(18,'max_daily_event_hours','12','Maximum hours allowed for a single-day event','integer',1,'2025-06-12 01:47:39','2025-06-12 01:47:39'),(19,'min_event_notice_hours','24','Minimum hours notice required for event creation','integer',1,'2025-06-12 01:47:39','2025-06-12 01:47:39');
 /*!40000 ALTER TABLE `system_settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -733,7 +912,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','admin@school.edu','$2y$10$y8Cl8SKNpbTSAna6EEA.OexQwnfBkEaNc7dW3FeHwSY8UepEkT5ly','System Administrator','admin',1,'2025-05-26 16:15:36','2025-06-09 18:12:08','2025-06-09 18:12:08',NULL,NULL,NULL,NULL),(14,'Valentino','testuser1@gmail.com','$2y$10$x/9UA2XeHhSdXh.ztub.wOL4lu7NNrmxR3nvFGTE82JzjsG9bab6u','Valentino Casaldan','teacher',1,'2025-06-03 14:18:05','2025-06-09 02:36:17','2025-06-09 02:36:17',1,'12','09288964553','Ormoc City');
+INSERT INTO `users` VALUES (1,'admin','admin@school.edu','$2y$10$y8Cl8SKNpbTSAna6EEA.OexQwnfBkEaNc7dW3FeHwSY8UepEkT5ly','System Administrator','admin',1,'2025-05-26 16:15:36','2025-06-12 00:42:45','2025-06-12 00:42:45',NULL,NULL,NULL,NULL),(14,'Valentino','testuser1@gmail.com','$2y$10$x/9UA2XeHhSdXh.ztub.wOL4lu7NNrmxR3nvFGTE82JzjsG9bab6u','Valentino Casaldan','teacher',1,'2025-06-03 14:18:05','2025-06-12 00:39:05','2025-06-12 00:39:05',1,'12','09288964553','Ormoc City');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -782,4 +961,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-10  2:17:46
+-- Dump completed on 2025-06-12 10:20:10

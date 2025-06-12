@@ -80,8 +80,8 @@ $current_time = date('Y-m-d H:i:s');
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 sidebar p-3">
                 <div class="text-center mb-4">
-                    <i class="fas fa-id-card-alt fa-2x text-primary mb-2"></i>
-                    <h5>RFID System</h5>
+                    <i class="fas fa-calendar-check fa-2x text-primary mb-2"></i>
+                    <h5>EVENTRACK</h5>
                     <small class="text-muted">Welcome, <?php echo $_SESSION['full_name']; ?></small>
                 </div>
                 
@@ -93,7 +93,13 @@ $current_time = date('Y-m-d H:i:s');
                         <i class="fas fa-users me-2"></i>Students
                     </a>
                     <a class="nav-link" href="courses.php">
-                        <i class="fas fa-book me-2"></i>Courses
+                        <i class="fas fa-book me-2"></i>Subjects
+                    </a>
+                    <a class="nav-link" href="departments.php">
+                        <i class="fas fa-building me-2"></i>Departments
+                    </a>
+                    <a class="nav-link" href="events.php">
+                        <i class="fas fa-calendar me-2"></i>Events
                     </a>
                     <a class="nav-link" href="register-instructor.php">
                         <i class="fas fa-chalkboard-teacher me-2"></i>Instructors
@@ -126,6 +132,9 @@ $current_time = date('Y-m-d H:i:s');
                         </a>
                         <a class="nav-link text-light" href="scan-rfid.php">
                             <i class="fas fa-wifi me-2"></i>Scan RFID
+                        </a>
+                        <a class="nav-link text-light" href="activity-logs.php">
+                            <i class="fas fa-history me-2"></i>Activity Logs
                         </a>
                     </div>
                     

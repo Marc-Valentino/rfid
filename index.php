@@ -21,7 +21,7 @@ if ($attendance->isLoggedIn()) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo APP_NAME; ?> - Student Attendance System</title>
+    <title>EVENTRACK - RFID Event Attendance System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -153,8 +153,8 @@ if ($attendance->isLoggedIn()) {
             <div class="hero-section">
                 <div class="text-center mb-4">
                     <i class="fas fa-id-card-alt fa-4x text-primary mb-3"></i>
-                    <h1 class="hero-title"><?php echo APP_NAME; ?></h1>
-                    <p class="hero-subtitle">Modern RFID-based Student Attendance Tracking System</p>
+                    <h1 class="hero-title">EVENTRACK</h1>
+                    <p class="hero-subtitle">RFID-Based Event Attendance Management System</p>
                     <div class="cta-buttons">
                         <a href="login.php" class="btn btn-primary">
                             <i class="fas fa-sign-in-alt me-2"></i>Sign In
@@ -169,7 +169,7 @@ if ($attendance->isLoggedIn()) {
             <!-- Features Section -->
             <div class="row mt-5">
                 <div class="col-12 mb-4">
-                    <h2 class="section-title">Key Features</h2>
+                    <h2 class="section-title">Why Choose EVENTRACK?</h2>
                 </div>
                 
                 <div class="col-md-4">
@@ -177,8 +177,8 @@ if ($attendance->isLoggedIn()) {
                         <div class="feature-icon">
                             <i class="fas fa-fingerprint"></i>
                         </div>
-                        <h4>RFID Authentication</h4>
-                        <p class="text-white-50">Quick and secure attendance tracking using RFID card technology.</p>
+                        <h4>RFID Event Check-in</h4>
+                        <p class="text-white-50">Quick and secure event attendance tracking using RFID technology for seamless check-ins.</p>
                     </div>
                 </div>
                 
@@ -187,8 +187,8 @@ if ($attendance->isLoggedIn()) {
                         <div class="feature-icon">
                             <i class="fas fa-chart-line"></i>
                         </div>
-                        <h4>Real-time Analytics</h4>
-                        <p class="text-white-50">Comprehensive dashboards with attendance statistics and reports.</p>
+                        <h4>Event Management</h4>
+                        <p class="text-white-50">Easily create, manage, and track multiple events with our intuitive platform.</p>
                     </div>
                 </div>
                 
@@ -197,8 +197,8 @@ if ($attendance->isLoggedIn()) {
                         <div class="feature-icon">
                             <i class="fas fa-bell"></i>
                         </div>
-                        <h4>Automated Notifications</h4>
-                        <p class="text-white-50">Instant alerts for absences and attendance patterns.</p>
+                        <h4>Real-time Monitoring</h4>
+                        <p class="text-white-50">Track event attendance in real-time with our live dashboard.</p>
                     </div>
                 </div>
                 
@@ -239,15 +239,15 @@ if ($attendance->isLoggedIn()) {
                     <h2 class="section-title">About The System</h2>
                 </div>
                 <div class="col-12">
-                    <p>The RFID Student Attendance System is a modern solution designed to streamline attendance tracking in educational institutions. Using RFID technology, the system provides a contactless, efficient way to record student attendance while offering powerful reporting and analytics tools.</p>
-                    <p>Developed with both administrators and instructors in mind, the system offers intuitive interfaces for managing courses, students, and attendance records.</p>
+                    <p>EVENTRACK is a cutting-edge event attendance management system that leverages RFID technology to simplify and automate the process of tracking event participation. Our system provides event organizers with powerful tools to manage attendees, track check-ins, and analyze event metrics in real-time.</p>
+                    <p>With our RFID-based solution, you can eliminate long queues, reduce manual data entry, and gain valuable insights into your event's attendance patterns. Whether you're organizing a small workshop or a large conference, EVENTRACK scales to meet your needs.</p>
                 </div>
             </div>
             
             <!-- Footer -->
             <div class="row mt-5 pt-4 border-top border-secondary">
                 <div class="col-12 text-center">
-                    <p class="text-white-50">&copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?>. All rights reserved.</p>
+                    <p class="text-white-50">&copy; <?php echo date('Y'); ?> EVENTRACK - RFID Event Attendance System. All rights reserved.</p>
                 </div>
             </div>
         </div>

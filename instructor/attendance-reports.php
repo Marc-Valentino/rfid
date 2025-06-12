@@ -20,25 +20,109 @@ $instructor_courses = $attendance->getInstructorCourses($instructor_id);
 $selected_course = isset($_GET['course_id']) ? $_GET['course_id'] : '';
 $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : date('Y-m-01'); // First day of current month
 $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : date('Y-m-d'); // Today
-$report_type = isset($_GET['report_type']) ? $_GET['report_type'] : 'summary';
+$attendance_type = isset($_GET['attendance_type']) ? $_GET['attendance_type'] : '';
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+// Pagination
+$records_per_page = 25;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $records_per_page;
 
 // Get attendance data based on filters
 $attendance_data = [];
+$total_records = 0;
 $summary_stats = [];
 
 if (!empty($selected_course)) {
-    // Get attendance records for the selected course and date range
-    $attendance_data = $attendance->getAttendanceReportData($instructor_id, $selected_course, $date_from, $date_to);
+    // Get total count for pagination
+    $total_records = $attendance->countAttendanceRecords($instructor_id, $selected_course, $date_from, $date_to, $attendance_type, $search);
+    
+    // Get paginated attendance records
+    $attendance_data = $attendance->getAttendanceReportData(
+        $instructor_id, 
+        $selected_course, 
+        $date_from, 
+        $date_to, 
+        $attendance_type, 
+        $search,
+        $offset,
+        $records_per_page
+    );
+    
+    // Get summary stats
     $summary_stats = $attendance->getAttendanceSummaryStats($instructor_id, $selected_course, $date_from, $date_to);
 }
 
+// Calculate total pages
+$total_pages = ceil($total_records / $records_per_page);
+
+// Function to generate pagination links
+function getPaginationLinks($current_page, $total_pages, $base_url) {
+    $links = [];
+    $range = 2; // Number of pages to show around current page
+    
+    // Previous page link
+    if ($current_page > 1) {
+        $links[] = [
+            'page' => $current_page - 1,
+            'text' => '&laquo; Previous',
+            'active' => false,
+            'disabled' => false
+        ];
+    } else {
+        $links[] = [
+            'page' => 1,
+            'text' => '&laquo; Previous',
+            'active' => false,
+            'disabled' => true
+        ];
+    }
+    
+    // Page numbers
+    for ($i = max(1, $current_page - $range); $i <= min($total_pages, $current_page + $range); $i++) {
+        $links[] = [
+            'page' => $i,
+            'text' => $i,
+            'active' => ($i == $current_page),
+            'disabled' => false
+        ];
+    }
+    
+    // Next page link
+    if ($current_page < $total_pages) {
+        $links[] = [
+            'page' => $current_page + 1,
+            'text' => 'Next &raquo;',
+            'active' => false,
+            'disabled' => false
+        ];
+    } else {
+        $links[] = [
+            'page' => $total_pages,
+            'text' => 'Next &raquo;',
+            'active' => false,
+            'disabled' => true
+        ];
+    }
+    
+    return $links;
+}
+
+// Generate pagination links
+$pagination_links = getPaginationLinks($page, $total_pages, $_SERVER['PHP_SELF'] . '?' . http_build_query([
+    'course_id' => $selected_course,
+    'date_from' => $date_from,
+    'date_to' => $date_to,
+    'attendance_type' => $attendance_type,
+    'search' => $search
+]));
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance Reports - <?php echo APP_NAME; ?></title>
+    <title>Attendance Reports - <?php echo APP_NAME; ?> - Event Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -114,7 +198,7 @@ if (!empty($selected_course)) {
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 sidebar p-3">
                 <div class="text-center mb-4">
-                    <i class="fas fa-chalkboard-teacher fa-2x text-primary mb-2"></i>
+                    <i class="fas fa-calendar-check fa-2x text-primary mb-2"></i>
                     <h5>Instructor Panel</h5>
                     <small class="text-muted">Welcome, <?php echo $_SESSION['full_name']; ?></small>
                 </div>
@@ -206,12 +290,17 @@ if (!empty($selected_course)) {
                                 <input type="date" class="form-control" id="date_to" name="date_to" value="<?php echo $date_to; ?>">
                             </div>
                             <div class="col-md-3">
-                                <label for="report_type" class="form-label">Report Type</label>
-                                <select class="form-select" id="report_type" name="report_type">
-                                    <option value="summary" <?php echo ($report_type == 'summary') ? 'selected' : ''; ?>>Summary</option>
-                                    <option value="detailed" <?php echo ($report_type == 'detailed') ? 'selected' : ''; ?>>Detailed</option>
-                                    <option value="daily" <?php echo ($report_type == 'daily') ? 'selected' : ''; ?>>Daily</option>
+                                <label for="attendance_type" class="form-label">Attendance Type</label>
+                                <select class="form-select" id="attendance_type" name="attendance_type">
+                                    <option value="">All</option>
+                                    <option value="Present" <?php echo ($attendance_type == 'Present') ? 'selected' : ''; ?>>Present</option>
+                                    <option value="Late" <?php echo ($attendance_type == 'Late') ? 'selected' : ''; ?>>Late</option>
+                                    <option value="Absent" <?php echo ($attendance_type == 'Absent') ? 'selected' : ''; ?>>Absent</option>
                                 </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="search" class="form-label">Search</label>
+                                <input type="text" class="form-control" id="search" name="search" value="<?php echo $search; ?>">
                             </div>
                             <div class="col-md-2 d-flex align-items-end">
                                 <button type="submit" class="btn btn-primary w-100">
@@ -372,6 +461,22 @@ if (!empty($selected_course)) {
                             <?php endif; ?>
                         </div>
                     </div>
+                    
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <p class="text-muted mb-0">Showing <?php echo $offset + 1; ?> to <?php echo min($offset + $records_per_page, $total_records); ?> of <?php echo $total_records; ?> records.</p>
+                        <nav>
+                            <ul class="pagination">
+                                <?php foreach ($pagination_links as $link): ?>
+                                    <li class="page-item <?php echo ($link['active']) ? 'active' : ''; ?>">
+                                        <a class="page-link" href="<?php echo $link['page'] == 1 ? $_SERVER['PHP_SELF'] : $_SERVER['PHP_SELF'] . '?page=' . $link['page']; ?>">
+                                            <?php echo $link['text']; ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </nav>
+                    </div>
                 <?php else: ?>
                     <!-- No Course Selected -->
                     <div class="card">
@@ -387,14 +492,46 @@ if (!empty($selected_course)) {
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Sample data for charts - replace with actual data from PHP
-        const attendanceData = {
-            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-            datasets: [{
-                label: 'Attendance Rate',
-                data: [85, 92, 78, 88],
-                borderColor: '#007bff',
+        // Initialize date pickers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize date pickers
+            const dateFromEl = document.getElementById('date_from');
+            const dateToEl = document.getElementById('date_to');
+            
+            if (dateFromEl && dateToEl) {
+                // Set max date to today for both fields
+                const today = new Date().toISOString().split('T')[0];
+                dateFromEl.max = today;
+                dateToEl.max = today;
+                
+                // Set date_to min to date_from when date_from changes
+                dateFromEl.addEventListener('change', function() {
+                    dateToEl.min = this.value;
+                    if (new Date(dateToEl.value) < new Date(this.value)) {
+                        dateToEl.value = this.value;
+                    }
+                });
+                
+                // Set date_from max to date_to when date_to changes
+                dateToEl.addEventListener('change', function() {
+                    dateFromEl.max = this.value;
+                    if (new Date(dateFromEl.value) > new Date(this.value)) {
+                        dateFromEl.value = this.value;
+                    }
+                });
+            }
+            
+            // Initialize charts if data is available
+            <?php if (!empty($summary_stats['daily_data']) && count($summary_stats['daily_data']) > 0): ?>
+                initDailyAttendanceChart(<?php echo json_encode($summary_stats['daily_data']); ?>);
+            <?php endif; ?>
+            
+            <?php if (!empty($summary_stats['type_data']) && count($summary_stats['type_data']) > 0): ?>
+                initAttendanceTypeChart(<?php echo json_encode($summary_stats['type_data']); ?>);
+            <?php endif; ?>
+        });
                 backgroundColor: 'rgba(0, 123, 255, 0.1)',
                 tension: 0.4
             }]

@@ -87,7 +87,7 @@ if (isset($_POST['rfid'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RFID Scanner - <?php echo APP_NAME; ?></title>
+    <title>RFID Scanner - <?php echo APP_NAME; ?> - Event Attendance</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -222,8 +222,8 @@ if (isset($_POST['rfid'])) {
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 sidebar p-3">
                 <div class="text-center mb-4">
-                    <i class="fas fa-id-card-alt fa-2x text-primary mb-2"></i>
-                    <h5>RFID System</h5>
+                    <i class="fas fa-calendar-check fa-2x text-primary mb-2"></i>
+                    <h5>EVENTRACK</h5>
                     <small class="text-muted">Welcome, <?php echo $_SESSION['full_name']; ?></small>
                 </div>
                 
@@ -235,7 +235,13 @@ if (isset($_POST['rfid'])) {
                         <i class="fas fa-users me-2"></i>Students
                     </a>
                     <a class="nav-link" href="courses.php">
-                        <i class="fas fa-book me-2"></i>Courses
+                        <i class="fas fa-book me-2"></i>Subjects
+                    </a>
+                    <a class="nav-link" href="departments.php">
+                        <i class="fas fa-building me-2"></i>Departments
+                    </a>
+                    <a class="nav-link" href="events.php">
+                        <i class="fas fa-calendar me-2"></i>Events
                     </a>
                     <a class="nav-link" href="register-instructor.php">
                         <i class="fas fa-chalkboard-teacher me-2"></i>Instructors
@@ -268,6 +274,9 @@ if (isset($_POST['rfid'])) {
                         </a>
                         <a class="nav-link active text-light" href="scan-rfid.php">
                             <i class="fas fa-wifi me-2"></i>Scan RFID
+                        </a>
+                        <a class="nav-link text-light" href="activity-logs.php">
+                            <i class="fas fa-history me-2"></i>Activity Logs
                         </a>
                     </div>
                     
@@ -683,8 +692,6 @@ function processRFIDScan(rfidUid) {
         handleScanError(error);
     });
 }
-
-                            // Replace the existing registerStudent function
 function registerStudent(form) {
     const formData = new FormData(form);
     const registrationData = {};
@@ -707,47 +714,71 @@ function registerStudent(form) {
         },
         body: JSON.stringify(registrationData)
     })
-    .then(response => response.json())
+    .then(response => {
+        // First check if the response is ok (status in the range 200-299)
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
+        // Only show success message if we get a success response
         if (data.success) {
-            // Show success toast
+            // Show success message
             Toastify({
                 text: `✅ Registration Successful!\nStudent: ${registrationData.first_name} ${registrationData.last_name}`,
                 duration: 3000,
                 gravity: "top",
                 position: "right",
                 className: "success",
-                close: true,
-                stopOnFocus: true
+                close: true
             }).showToast();
 
-            // Reset form
+            // Reset scanner UI
+            const scanStatus = document.getElementById('scanStatus');
+            const scanResult = document.getElementById('scanResult');
+            
+            // Show temporary success message
+            scanStatus.innerHTML = `
+                <i class="fas fa-check-circle scanner-icon text-success"></i>
+                <h4 class="text-light mb-4">Registration Successful!</h4>
+                <p class="text-muted">Student: ${registrationData.first_name} ${registrationData.last_name}</p>
+            `;
+
+            // Clear the registration form and hide it
+            scanResult.classList.add('d-none');
             form.reset();
-            
-            // Reset scanner state
-            resetScannerState();
-            
-            // Refresh attendance records
-            loadAttendanceData();
-            
-            // Auto restart scanning
+
+            // Return to scanning mode after delay
             setTimeout(() => {
-                startRFIDScan();
-            }, 500);
+                // Reset scanner state to ready
+                scanStatus.innerHTML = `
+                    <i class="fas fa-wifi scanner-icon"></i>
+                    <h4 class="text-light mb-4">RFID Scanner Ready</h4>
+                    <p class="text-muted">Please scan another card</p>
+                `;
+                
+                // Refresh attendance records
+                loadAttendanceData();
+                
+                // Restart scanning
+                checkRFIDReaderAndScan();
+            }, 2000);
         } else {
+            // If the server returned success: false
             throw new Error(data.message || 'Registration failed');
         }
     })
     .catch(error => {
-        // Show error toast
+        console.error('Registration error:', error);
+        // Only show error toast if the registration actually failed
         Toastify({
-            text: `❌ Registration Failed!\n${error.message}`,
+            text: `❌ Registration Failed!\n${error.message || 'Please try again'}`,
             duration: 4000,
             gravity: "top",
             position: "right",
             className: "error",
-            close: true,
-            stopOnFocus: true
+            close: true
         }).showToast();
     })
     .finally(() => {
@@ -758,20 +789,20 @@ function registerStudent(form) {
 
     return false; // Prevent form submission
 }
-
-// Add helper function for scanner state reset
-function resetScannerState() {
-    const scanStatus = document.getElementById('scanStatus');
-    const scanResult = document.getElementById('scanResult');
     
-    scanStatus.innerHTML = `
-        <i class="fas fa-wifi scanner-icon"></i>
-        <h4 class="text-light mb-4">RFID Scanner Ready</h4>
-        <p class="text-muted">Please scan your RFID card</p>
-    `;
-    
-    scanResult.classList.add('d-none');
-}
+        // Add helper function for scanner state reset
+        function resetScannerState() {
+            const scanStatus = document.getElementById('scanStatus');
+            const scanResult = document.getElementById('scanResult');
+            
+            scanStatus.innerHTML = `
+                <i class="fas fa-wifi scanner-icon"></i>
+                <h4 class="text-light mb-4">RFID Scanner Ready</h4>
+                <p class="text-muted">Please scan your RFID card</p>
+            `;
+            
+            scanResult.classList.add('d-none');
+        }
                         </script>
                     </div>
                 </div>
@@ -1166,76 +1197,115 @@ function resetScannerState() {
         }
     
         // Function to register a student
-        function registerStudent(form) {
-            const formData = new FormData(form);
-            const registrationData = {};
-            
-            formData.forEach((value, key) => {
-                registrationData[key] = value;
-            });
-            
-            // Show loading state
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Registering...';
-            submitBtn.disabled = true;
+function registerStudent(form) {
+    const formData = new FormData(form);
+    const registrationData = {};
+    
+    formData.forEach((value, key) => {
+        registrationData[key] = value;
+    });
+    
+    // Show loading state
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Registering...';
+    submitBtn.disabled = true;
 
-            // Send registration request
-            fetch('../api/register-rfid.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(registrationData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Show success toast
-                    Toastify({
-                        text: `✅ Registration Successful!\nStudent: ${registrationData.first_name} ${registrationData.last_name}`,
-                        duration: 3000,
-                        gravity: "top",
-                        position: "right",
-                        className: "success",
-                        close: true,
-                        stopOnFocus: true
-                    }).showToast();
+    // Show success flag
+    let registrationSuccessful = false;
 
-                    // Reset form
-                    form.reset();
-                    
-                    // Reset scanner state
-                    resetScannerState();
-                    
-                    // Refresh attendance records
-                    loadAttendanceData();
-                    
-                    // Auto restart scanning
-                    setTimeout(() => {
-                        startRFIDScan();
-                    }, 500);
-                } else {
-                    throw new Error(data.message || 'Registration failed');
-                }
-            })
-            .catch(error => {
-                // Show error toast
-                Toastify({
-                    text: `❌ Registration Failed!\n${error.message}`,
-                    duration: 4000,
-                    gravity: "top",
-                    position: "right",
-                    className: "error",
-                    close: true,
-                    stopOnFocus: true
-                }).showToast();
-            })
-            .finally(() => {
-                // Reset button state
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
-            });
+    // Send registration request
+    fetch('../api/register-rfid.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(registrationData)
+    })
+    .then(async response => {
+        const responseContent = await response.text();
+        
+        // First try to parse as JSON
+        try {
+            const data = JSON.parse(responseContent);
+            if (data.success) {
+                registrationSuccessful = true;
+            }
+            return data;
+        } catch (e) {
+            // If not JSON, check if the response looks successful
+            if (response.ok) {
+                registrationSuccessful = true;
+                return {
+                    success: true,
+                    message: "Registration successful",
+                    data: {
+                        student_name: `${registrationData.first_name || ''} ${registrationData.last_name || ''}`.trim()
+                    }
+                };
+            }
+            throw new Error(responseContent || 'Registration failed');
+        }
+    })
+    .then(data => {
+        // Show success message
+        Toastify({
+            text: `✅ Registration Successful!\nStudent: ${data.data?.student_name || `${registrationData.first_name || ''} ${registrationData.last_name || ''}`.trim()}`,
+            duration: 5000,
+            gravity: "top",
+            position: "right",
+            className: "success",
+            close: true
+        }).showToast();
+
+        // Reset scanner UI
+        const scanStatus = document.getElementById('scanStatus');
+        const scanResult = document.getElementById('scanResult');
+        
+        // Show success message in the scanner UI
+        scanStatus.innerHTML = `
+            <i class="fas fa-check-circle scanner-icon text-success"></i>
+            <h4 class="text-light mb-4">Registration Successful!</h4>
+            <p class="text-muted">${data.message || 'Student registered successfully'}</p>
+            <p class="text-light">${data.data?.student_name || ''}</p>
+        `;
+        
+        // Clear the registration form
+        // Clear the registration form and hide it
+        scanResult.classList.add('d-none');
+        form.reset();
+
+        // Play success sound if available
+        if (typeof playSound === 'function') {
+            playSound('success');
+        }
+
+        // Refresh the page after a short delay to return to scanning mode
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+    })
+    .catch(error => {
+        console.error('Registration error:', error);
+        Toastify({
+            text: `❌ Registration Failed!\nPlease try again`,
+            duration: 4000,
+            gravity: "top",
+            position: "right",
+            className: "error",
+            close: true
+        }).showToast();
+        
+        // Play error sound if available
+        if (typeof playSound === 'function') {
+            playSound('error');
+        }
+    })
+    .finally(() => {
+        // Reset button state
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+    });
 
     return false; // Prevent form submission
 }
