@@ -41,6 +41,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $guardian_name = trim($_POST['guardian_name'] ?? '');
     $guardian_phone = trim($_POST['guardian_phone'] ?? '');
     
+    // Handle file upload
+    $profile_image = '';
+    $profile_image_path = '';
+    
+    if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
+        $file = $_FILES['profile_image'];
+        $fileExt = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
+        
+        if (in_array($fileExt, $allowedExts)) {
+            // Generate unique filename
+            $newFilename = uniqid('student_') . '.' . $fileExt;
+            $targetPath = '../uploads/students/' . $newFilename;
+            
+            // Ensure the uploads directory exists
+            if (!file_exists('../uploads/students/')) {
+                mkdir('../uploads/students/', 0777, true);
+            }
+            
+            if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                $profile_image = $newFilename;
+                $profile_image_path = 'uploads/students/' . $newFilename;
+            } else {
+                $errors[] = 'Failed to upload profile image. Please try again.';
+            }
+        } elseif (!empty($file['name'])) {
+            $errors[] = 'Invalid file type. Only JPG, JPEG, PNG, and GIF files are allowed.';
+        }
+    }
+    
     // Validation
     if (empty($student_number)) $errors[] = 'Student number is required';
     if (empty($first_name)) $errors[] = 'First name is required';
@@ -64,24 +94,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors[] = 'Email already exists';
         }
     }
-    
+
     if (empty($errors)) {
         try {
             $sql = "INSERT INTO students (student_number, first_name, last_name, middle_name, email, phone, 
                                         date_of_birth, gender, address, department_id, course_id, year_level,
-                                        emergency_contact_name, emergency_contact_phone, guardian_name, guardian_phone)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                        emergency_contact_name, emergency_contact_phone, guardian_name, guardian_phone,
+                                        profile_image, profile_image_path)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 $student_number, $first_name, $last_name, $middle_name, $email, $phone,
                 $date_of_birth ?: null, $gender ?: null, $address, 
                 $department_id ?: null, $course_id ?: null, $year_level ?: null,
-                $emergency_contact_name, $emergency_contact_phone, $guardian_name, $guardian_phone
+                $emergency_contact_name, $emergency_contact_phone, $guardian_name, $guardian_phone,
+                $profile_image, $profile_image_path
             ]);
-            
+
             $success = true;
-            
+
             // Initialize AttendanceSystem
             $attendanceSystem = new AttendanceSystem();
             
@@ -270,7 +302,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <div class="card">
                     <div class="card-body">
-                        <form method="POST">
+                        <form method="POST" enctype="multipart/form-data">
                             <div class="row">
                                 <!-- Basic Information -->
                                 <div class="col-md-6">
@@ -311,6 +343,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             <label class="form-label text-light">Phone</label>
                                             <input type="tel" class="form-control" 
                                                    name="phone" value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label text-light">Profile Picture</label>
+                                        <div class="input-group">
+                                            <input type="file" class="form-control" id="profile_image" name="profile_image" accept="image/*" onchange="previewImage(this)">
+                                        </div>
+                                        <small class="text-muted">Max size: 2MB. Allowed formats: JPG, JPEG, PNG, GIF</small>
+                                        <div id="imagePreview" class="mt-2 text-center" style="display: none;">
+                                            <img id="preview" src="#" alt="Preview" class="img-thumbnail" style="max-height: 200px;">
                                         </div>
                                     </div>
                                     
@@ -407,6 +450,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         <input type="tel" class="form-control" 
                                                name="guardian_phone" value="<?php echo htmlspecialchars($_POST['guardian_phone'] ?? ''); ?>">
                                     </div>
+                                    
+                                    
                                 </div>
                             </div>
                             
@@ -423,5 +468,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('preview');
+            const previewDiv = document.getElementById('imagePreview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewDiv.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                previewDiv.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

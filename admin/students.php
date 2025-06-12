@@ -121,6 +121,14 @@ $departments = $db->query($dept_sql)->fetchAll();
         .table-dark {
             background: rgba(255, 255, 255, 0.05);
         }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        
+        .table img {
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
         .badge {
             border-radius: 20px;
         }
@@ -319,6 +327,7 @@ $departments = $db->query($dept_sql)->fetchAll();
                                 <table class="table table-dark table-striped">
                                     <thead>
                                         <tr>
+                                            <th>Photo</th>
                                             <th>Student #</th>
                                             <th>Name</th>
                                             <th>Email</th>
@@ -333,6 +342,15 @@ $departments = $db->query($dept_sql)->fetchAll();
                                     <tbody>
                                         <?php foreach ($students as $student): ?>
                                             <tr>
+                                                <td>
+                                                    <?php if (!empty($student['profile_image_path'])): ?>
+                                                        <img src="../<?php echo htmlspecialchars($student['profile_image_path']); ?>" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                                    <?php else: ?>
+                                                        <div class="text-center">
+                                                            <i class="fas fa-user-circle fa-2x text-muted"></i>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </td>
                                                 <td><?php echo htmlspecialchars($student['student_number']); ?></td>
                                                 <td>
                                                     <strong><?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name']); ?></strong>
@@ -361,8 +379,7 @@ $departments = $db->query($dept_sql)->fetchAll();
                                                            class="btn btn-outline-primary" title="Edit">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <a href="#" class="btn btn-outline-info" title="View Details"
-                                                           data-bs-toggle="modal" data-bs-target="#studentModal"
+                                                        <a href="#" class="btn btn-outline-primary btn-sm view-student" data-bs-toggle="modal" data-bs-target="#studentModal" 
                                                            data-student-id="<?php echo $student['student_id']; ?>"
                                                            data-student-number="<?php echo htmlspecialchars($student['student_number']); ?>"
                                                            data-first-name="<?php echo htmlspecialchars($student['first_name']); ?>"
@@ -372,7 +389,8 @@ $departments = $db->query($dept_sql)->fetchAll();
                                                            data-course="<?php echo htmlspecialchars($student['course_name'] ?? 'N/A'); ?>"
                                                            data-year-level="<?php echo htmlspecialchars($student['year_level'] ?? 'N/A'); ?>"
                                                            data-enrollment-status="<?php echo htmlspecialchars($student['enrollment_status']); ?>"
-                                                           data-rfid-status="<?php echo $student['rfid_uid'] ? $student['card_status'] : 'No Card'; ?>">
+                                                           data-rfid-status="<?php echo $student['rfid_uid'] ? $student['card_status'] : 'No Card'; ?>"
+                                                           data-profile-image="<?php echo !empty($student['profile_image_path']) ? htmlspecialchars($student['profile_image_path']) : ''; ?>">
                                                             <i class="fas fa-eye"></i>
                                                         </a>
                                                         <button type="button" class="btn btn-outline-danger btn-sm delete-student" 
@@ -419,9 +437,12 @@ $departments = $db->query($dept_sql)->fetchAll();
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-12 text-center mb-3">
-                            <i class="fas fa-user-graduate fa-4x text-primary"></i>
+                    <div class="row mb-4">
+                        <div class="col-md-12 text-center">
+                            <div id="modal-profile-image" class="mx-auto" style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid #0d6efd; background-color: #2d2d2d; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user-graduate fa-4x text-primary" id="modal-default-icon"></i>
+                                <img id="modal-student-image" src="" alt="Student Photo" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                            </div>
                         </div>
                     </div>
                     <div class="row mb-2">
@@ -604,6 +625,21 @@ $departments = $db->query($dept_sql)->fetchAll();
                         rfidBadge.className = 'badge bg-danger';
                     } else {
                         rfidBadge.className = 'badge bg-warning';
+                    }
+                    
+                    // Set profile image
+                    const profileImage = button.getAttribute('data-profile-image');
+                    const modalImage = document.getElementById('modal-student-image');
+                    const modalDefaultIcon = document.getElementById('modal-default-icon');
+                    const modalProfileImage = document.getElementById('modal-profile-image');
+                    
+                    if (profileImage) {
+                        modalImage.src = '../' + profileImage;
+                        modalImage.style.display = 'block';
+                        modalDefaultIcon.style.display = 'none';
+                    } else {
+                        modalImage.style.display = 'none';
+                        modalDefaultIcon.style.display = 'block';
                     }
                     
                     // Set edit link

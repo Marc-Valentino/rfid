@@ -66,54 +66,104 @@ try {
             if ($check_stmt->rowCount() > 0) {
                 $error_msg = "Student number already exists for another student.";
             } else {
-                // Update student record
-                $update_sql = "
-                    UPDATE students SET 
-                    student_number = ?,
-                    first_name = ?,
-                    last_name = ?,
-                    middle_name = ?,
-                    email = ?,
-                    phone = ?,
-                    date_of_birth = ?,
-                    gender = ?,
-                    address = ?,
-                    department_id = ?,
-                    course_id = ?,
-                    year_level = ?,
-                    enrollment_status = ?,
-                    emergency_contact_name = ?,
-                    emergency_contact_phone = ?,
-                    guardian_name = ?,
-                    guardian_phone = ?,
-                    updated_at = NOW()
-                    WHERE student_id = ?
-                ";
+                // Handle file upload if a new image is provided
+                $profile_image = $student['profile_image'] ?? '';
+                $profile_image_path = $student['profile_image_path'] ?? '';
                 
-                $update_stmt = $pdo->prepare($update_sql);
-                $update_stmt->execute([
-                    $student_number,
-                    $first_name,
-                    $last_name,
-                    $_POST['middle_name'] ?? null,
-                    $email,
-                    $_POST['phone'] ?? null,
-                    $_POST['date_of_birth'] ?? null,
-                    $_POST['gender'] ?? null,
-                    $_POST['address'] ?? null,
-                    $_POST['department_id'] ?? null,
-                    $_POST['course_id'] ?? null,
-                    $_POST['year_level'] ?? null,
-                    $_POST['enrollment_status'] ?? 'Active',
-                    $_POST['emergency_contact_name'] ?? null,
-                    $_POST['emergency_contact_phone'] ?? null,
-                    $_POST['guardian_name'] ?? null,
-                    $_POST['guardian_phone'] ?? null,
-                    $student_id
-                ]);
+                if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
+                    $file = $_FILES['profile_image'];
+                    $fileExt = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                    $allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
+                    
+                    if (in_array($fileExt, $allowedExts)) {
+                        // Generate unique filename
+                        $newFilename = uniqid('student_') . '.' . $fileExt;
+                        $targetPath = '../uploads/students/' . $newFilename;
+                        
+                        // Ensure the uploads directory exists
+                        if (!file_exists('../uploads/students/')) {
+                            mkdir('../uploads/students/', 0777, true);
+                        }
+                        
+                        if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                            // Delete old image if it exists
+                            if (!empty($profile_image_path) && file_exists('../' . $profile_image_path)) {
+                                unlink('../' . $profile_image_path);
+                            }
+                            
+                            $profile_image = $newFilename;
+                            $profile_image_path = 'uploads/students/' . $newFilename;
+                        } else {
+                            $error_msg = 'Failed to upload profile image. Please try again.';
+                        }
+                    } elseif (!empty($file['name'])) {
+                        $error_msg = 'Invalid file type. Only JPG, JPEG, PNG, and GIF files are allowed.';
+                    }
+                }
+                
+                // Only proceed with the update if there are no file upload errors
+                if (empty($error_msg)) {
+                    // Update student record
+                    $update_sql = "
+                        UPDATE students SET 
+                        student_number = ?,
+                        first_name = ?,
+                        last_name = ?,
+                        middle_name = ?,
+                        email = ?,
+                        phone = ?,
+                        date_of_birth = ?,
+                        gender = ?,
+                        address = ?,
+                        department_id = ?,
+                        course_id = ?,
+                        year_level = ?,
+                        enrollment_status = ?,
+                        emergency_contact_name = ?,
+                        emergency_contact_phone = ?,
+                        guardian_name = ?,
+                        guardian_phone = ?,
+                        profile_image = ?,
+                        profile_image_path = ?,
+                        updated_at = NOW()
+                        WHERE student_id = ?
+                    ";
+                    
+                    $update_stmt = $pdo->prepare($update_sql);
+                    $update_success = $update_stmt->execute([
+                        $student_number,
+                        $first_name,
+                        $last_name,
+                        $_POST['middle_name'] ?? null,
+                        $email,
+                        $_POST['phone'] ?? null,
+                        $_POST['date_of_birth'] ?? null,
+                        $_POST['gender'] ?? null,
+                        $_POST['address'] ?? null,
+                        !empty($_POST['department_id']) ? (int)$_POST['department_id'] : null,
+                        !empty($_POST['course_id']) ? (int)$_POST['course_id'] : null,
+                        $_POST['year_level'] ?? null,
+                        $_POST['enrollment_status'] ?? 'Active',
+                        $_POST['emergency_contact_name'] ?? null,
+                        $_POST['emergency_contact_phone'] ?? null,
+                        $_POST['guardian_name'] ?? null,
+                        $_POST['guardian_phone'] ?? null,
+                        $profile_image,
+                        $profile_image_path,
+                        $student_id
+                    ]);
+                    
+                    if ($update_success) {
+                        // Update the student array to reflect the changes
+                        $student = array_merge($student, [
+                            'profile_image' => $profile_image,
+                            'profile_image_path' => $profile_image_path
+                        ]);
+                    }
+                }
                 
                 // Handle RFID card update if provided
-                if (!empty($_POST['rfid_uid'])) {
+                if (empty($error_msg) && !empty($_POST['rfid_uid'])) {
                     $rfid_uid = trim($_POST['rfid_uid']);
                     
                     // Check if RFID already exists for another student
@@ -169,6 +219,14 @@ try {
                     // Refresh student data
                     $stmt->execute([$student_id]);
                     $student = $stmt->fetch();
+                    
+                    // Update the student array with the latest data
+                    if ($student) {
+                        $student = array_merge($student, [
+                            'profile_image' => $profile_image,
+                            'profile_image_path' => $profile_image_path
+                        ]);
+                    }
                 }
             }
         }
@@ -336,7 +394,7 @@ try {
 
                 <div class="card">
                     <div class="card-body">
-                        <form method="POST">
+                        <form method="POST" enctype="multipart/form-data">
                             <div class="row">
                                 <!-- Basic Information -->
                                 <div class="col-md-6">
@@ -395,6 +453,21 @@ try {
                                                 <option value="Other" <?php echo ($student['gender'] == 'Other') ? 'selected' : ''; ?>>Other</option>
                                             </select>
                                         </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label text-light">Profile Picture</label>
+                                        <input type="file" class="form-control" name="profile_image" accept="image/*" onchange="previewImage(this)">
+                                        <small class="text-muted">Leave blank to keep current image. Accepted formats: JPG, JPEG, PNG, GIF (Max: 2MB)</small>
+                                        <div class="mt-2" id="imagePreview" style="display: none;">
+                                            <img id="preview" src="#" alt="Preview" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                                        </div>
+                                        <?php if (!empty($student['profile_image_path'])): ?>
+                                        <div class="mt-2">
+                                            <p class="text-muted mb-1">Current Photo:</p>
+                                            <img src="../<?php echo htmlspecialchars($student['profile_image_path']); ?>" alt="Current Profile" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                                        </div>
+                                        <?php endif; ?>
                                     </div>
                                     
                                     <div class="mb-3">
@@ -533,5 +606,22 @@ try {
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('preview');
+            const previewDiv = document.getElementById('imagePreview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewDiv.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
 </body>
 </html>
