@@ -48,16 +48,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $result = $attendanceSystem->recordAttendanceByRFID($rfid_uid, $reader_id, $attendance_type, $event_id);
             
             if ($result['success']) {
+                // Get complete student info including photo path
+                $student = $attendanceSystem->getStudentByRFID($rfid_uid);
+                
                 $response = [
                     'success' => true,
                     'rfid_uid' => $rfid_uid,
                     'student_id' => $result['student_id'],
                     'student_name' => $result['student_name'],
-                    'student_number' => $result['student_number'],
-                    'department_name' => $result['department_name'],
-                    'course_name' => $result['course_name'],
+                    'student_number' => $result['student_number'] ?? '',
+                    'department_name' => $result['department_name'] ?? 'N/A',
+                    'course_name' => $result['course_name'] ?? 'N/A',
                     'attendance_type' => $attendance_type,
                     'attendance_time' => date('Y-m-d H:i:s'),
+                    'photo_path' => !empty($student['profile_image_path']) ? 
+                        (strpos($student['profile_image_path'], 'http') === 0 ? 
+                            $student['profile_image_path'] : 
+                            (BASE_URL . 'uploads/profiles/' . $student['profile_image_path']))
+                        : (BASE_URL . 'assets/img/default-avatar.png'),
                     'message' => 'Attendance recorded successfully'
                 ];
                 
@@ -66,17 +74,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     try {
                         $db = new Database();
                         $conn = $db->getConnection();
-                        $stmt = $conn->prepare("SELECT event_id, event_name, start_date, end_date FROM events WHERE event_id = ?");
+                        $stmt = $conn->prepare("
+                            SELECT e.event_id, e.event_name, e.start_date, e.end_date, 
+                                   et.type_name as event_type, e.location as event_location
+                            FROM events e
+                            LEFT JOIN event_types et ON e.type_id = et.type_id
+                            WHERE e.event_id = ?
+                        ");
                         $stmt->execute([$event_id]);
                         $event = $stmt->fetch(PDO::FETCH_ASSOC);
                         
                         if ($event) {
-                            $response['event_id'] = $event['event_id'];
-                            $response['event_name'] = $event['event_name'];
-                            $response['event_date'] = date('F j, Y', strtotime($event['start_date']));
+                            $response['event'] = [
+                                'event_id' => $event['event_id'],
+                                'event_name' => $event['event_name'],
+                                'event_type' => $event['event_type'] ?? 'General',
+                                'event_date' => date('F j, Y', strtotime($event['start_date'])),
+                                'event_location' => $event['event_location'] ?? 'TBD',
+                                'start_time' => date('g:i A', strtotime($event['start_date'])),
+                                'end_time' => $event['end_date'] ? date('g:i A', strtotime($event['end_date'])) : null
+                            ];
+                            
                             if ($event['end_date'] && $event['end_date'] !== $event['start_date']) {
-                                $response['event_date'] .= ' - ' . date('F j, Y', strtotime($event['end_date']));
+                                $response['event']['event_date'] .= ' - ' . date('F j, Y', strtotime($event['end_date']));
                             }
+                            
                             $response['message'] = 'Event attendance recorded successfully';
                         }
                     } catch (Exception $e) {
@@ -134,14 +156,23 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $result = $attendanceSystem->recordAttendanceByRFID($rfid_uid, 1, 'Time In', $event_id);
         
         if ($result['success']) {
+            // Get complete student info including photo path
+            $student = $attendanceSystem->getStudentByRFID($rfid_uid);
+            
             $response = [
                 'success' => true,
                 'rfid_uid' => $rfid_uid,
                 'student_id' => $result['student_id'],
                 'student_name' => $result['student_name'],
+                'student_number' => $result['student_number'] ?? '',
                 'attendance_id' => $result['attendance_id'],
                 'attendance_time' => $result['attendance_time'],
                 'attendance_type' => 'Time In',
+                'photo_path' => !empty($student['profile_image_path']) ? 
+                    (strpos($student['profile_image_path'], 'http') === 0 ? 
+                        $student['profile_image_path'] : 
+                        (BASE_URL . 'uploads/profiles/' . $student['profile_image_path']))
+                    : (BASE_URL . 'assets/img/default-avatar.png'),
                 'message' => 'Attendance recorded successfully'
             ];
             
@@ -150,17 +181,31 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 try {
                     $db = new Database();
                     $conn = $db->getConnection();
-                    $stmt = $conn->prepare("SELECT event_id, event_name, start_date, end_date FROM events WHERE event_id = ?");
+                    $stmt = $conn->prepare("
+                        SELECT e.event_id, e.event_name, e.start_date, e.end_date, 
+                               et.type_name as event_type, e.location as event_location
+                        FROM events e
+                        LEFT JOIN event_types et ON e.type_id = et.type_id
+                        WHERE e.event_id = ?
+                    ");
                     $stmt->execute([$event_id]);
                     $event = $stmt->fetch(PDO::FETCH_ASSOC);
                     
                     if ($event) {
-                        $response['event_id'] = $event['event_id'];
-                        $response['event_name'] = $event['event_name'];
-                        $response['event_date'] = date('F j, Y', strtotime($event['start_date']));
+                        $response['event'] = [
+                            'event_id' => $event['event_id'],
+                            'event_name' => $event['event_name'],
+                            'event_type' => $event['event_type'] ?? 'General',
+                            'event_date' => date('F j, Y', strtotime($event['start_date'])),
+                            'event_location' => $event['event_location'] ?? 'TBD',
+                            'start_time' => date('g:i A', strtotime($event['start_date'])),
+                            'end_time' => $event['end_date'] ? date('g:i A', strtotime($event['end_date'])) : null
+                        ];
+                        
                         if ($event['end_date'] && $event['end_date'] !== $event['start_date']) {
-                            $response['event_date'] .= ' - ' . date('F j, Y', strtotime($event['end_date']));
+                            $response['event']['event_date'] .= ' - ' . date('F j, Y', strtotime($event['end_date']));
                         }
+                        
                         $response['message'] = 'Event attendance recorded successfully';
                     }
                 } catch (Exception $e) {
@@ -193,57 +238,4 @@ else {
     exit;
 }
 
-// Continue with the rest of your code...
-
-function processRFIDScan($rfid_uid, $attendance_type) {
-    $db = new Database();
-    $conn = $db->getConnection();
-    
-    // Get current time and settings
-    $current_time = date('H:i:s');
-    $current_date = date('Y-m-d');
-    
-    // Get attendance settings
-    $settings = $conn->query("SELECT * FROM attendance_settings ORDER BY setting_id DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
-    
-    if ($attendance_type === 'Time In') {
-        // Check if within time in period
-        $time_in_start = strtotime($settings['time_in_start']);
-        $time_in_end = strtotime($settings['time_in_end']);
-        $current = strtotime($current_time);
-        
-        // Calculate if late
-        $is_late = $current > (strtotime($settings['time_in_start']) + ($settings['late_threshold_minutes'] * 60));
-        $late_minutes = $is_late ? round(($current - $time_in_start) / 60) : 0;
-        
-        // Set attendance status
-        $status = $is_late ? 'Late' : 'Present';
-        
-        // Record time in
-        $stmt = $conn->prepare("INSERT INTO daily_attendance_summary 
-            (student_id, attendance_date, first_time_in, attendance_status)
-            VALUES (?, CURDATE(), CURTIME(), ?)
-            ON DUPLICATE KEY UPDATE 
-            last_time_out = CURTIME(),
-            total_hours = TIMESTAMPDIFF(HOUR, first_time_in, CURTIME())
-        ");
-        
-        $stmt->execute([
-            $student['student_id'],
-            $attendance_type === 'Time In' ? 'Present' : $attendance_status
-        ]);
-        
-        // Execute statement...
-        
-    } else if ($attendance_type === 'Time Out') {
-        // Record time out and calculate hours
-        $stmt = $conn->prepare("UPDATE daily_attendance_summary 
-            SET last_time_out = ?, 
-                total_hours = TIMESTAMPDIFF(HOUR, first_time_in, ?) 
-            WHERE student_id = ? AND attendance_date = ? AND last_time_out IS NULL");
-        
-        // Execute statement...
-    }
-    
-    // Return appropriate response...
-}
+// Process RFID scan function is now handled by the AttendanceSystem class
