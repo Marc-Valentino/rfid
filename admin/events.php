@@ -156,11 +156,11 @@ try {
                         <a class="nav-link text-light" href="add-student.php">
                             <i class="fas fa-user-plus me-2"></i>Add Student
                         </a>
-                        <a class="nav-link text-light" href="add-event.php">
-                            <i class="fas fa-calendar-plus me-2"></i>Add Event
-                        </a>
                         <a class="nav-link text-light" href="scan-rfid.php">
                             <i class="fas fa-wifi me-2"></i>Scan RFID
+                        </a>
+                        <a class="nav-link text-light" href="activity-logs.php">
+                            <i class="fas fa-history me-2"></i>Activity Logs
                         </a>
                     </div>
                     

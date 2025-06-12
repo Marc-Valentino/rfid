@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rfid_uid = $attendanceSystem->sanitizeInput($input['rfid_uid']);
     $reader_id = isset($input['reader_id']) ? (int)$input['reader_id'] : 1;
     $attendance_type = isset($input['attendance_type']) ? $attendanceSystem->sanitizeInput($input['attendance_type']) : null;
+    $event_id = isset($input['event_id']) ? (int)$input['event_id'] : null;
 
     // Verify attendance type is valid
     if (!in_array($attendance_type, ['Time In', 'Time Out'])) {
@@ -43,11 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($cardExists) {
         try {
-            // Record attendance with the determined type
-            $result = $attendanceSystem->recordAttendanceByRFID($rfid_uid, $reader_id, $attendance_type);
+            // Record attendance with the determined type and event ID
+            $result = $attendanceSystem->recordAttendanceByRFID($rfid_uid, $reader_id, $attendance_type, $event_id);
             
             if ($result['success']) {
-                echo json_encode([
+                $response = [
                     'success' => true,
                     'rfid_uid' => $rfid_uid,
                     'student_id' => $result['student_id'],
@@ -58,7 +59,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'attendance_type' => $attendance_type,
                     'attendance_time' => date('Y-m-d H:i:s'),
                     'message' => 'Attendance recorded successfully'
-                ]);
+                ];
+                
+                // If this is for an event, add event details to the response
+                if ($event_id) {
+                    try {
+                        $db = new Database();
+                        $conn = $db->getConnection();
+                        $stmt = $conn->prepare("SELECT event_id, event_name, start_date, end_date FROM events WHERE event_id = ?");
+                        $stmt->execute([$event_id]);
+                        $event = $stmt->fetch(PDO::FETCH_ASSOC);
+                        
+                        if ($event) {
+                            $response['event_id'] = $event['event_id'];
+                            $response['event_name'] = $event['event_name'];
+                            $response['event_date'] = date('F j, Y', strtotime($event['start_date']));
+                            if ($event['end_date'] && $event['end_date'] !== $event['start_date']) {
+                                $response['event_date'] .= ' - ' . date('F j, Y', strtotime($event['end_date']));
+                            }
+                            $response['message'] = 'Event attendance recorded successfully';
+                        }
+                    } catch (Exception $e) {
+                        // If there's an error fetching event details, just log it and continue
+                        error_log("Error fetching event details: " . $e->getMessage());
+                    }
+                }
+                
+                echo json_encode($response);
             } else {
                 throw new Exception($result['message']);
             }
@@ -86,6 +113,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
     
     $rfid_uid = $attendanceSystem->sanitizeInput($_GET['rfid_uid']);
     $mode = isset($_GET['mode']) ? $attendanceSystem->sanitizeInput($_GET['mode']) : 'attendance';
+    $event_id = isset($_GET['event_id']) ? (int)$_GET['event_id'] : null;
     
     // Handle different modes for GET requests
     if ($mode === 'read_only') {
@@ -102,20 +130,46 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $cardExists = $attendanceSystem->checkRFIDCardExists($rfid_uid);
     
     if ($cardExists) {
-        // Card exists, record attendance
-        $result = $attendanceSystem->recordAttendanceByRFID($rfid_uid, 1, 'Time In');
+        // Card exists, record attendance with event ID if provided
+        $result = $attendanceSystem->recordAttendanceByRFID($rfid_uid, 1, 'Time In', $event_id);
         
         if ($result['success']) {
-            // Return success response with student data
-            echo json_encode([
+            $response = [
                 'success' => true,
                 'rfid_uid' => $rfid_uid,
                 'student_id' => $result['student_id'],
                 'student_name' => $result['student_name'],
                 'attendance_id' => $result['attendance_id'],
                 'attendance_time' => $result['attendance_time'],
+                'attendance_type' => 'Time In',
                 'message' => 'Attendance recorded successfully'
-            ]);
+            ];
+            
+            // If this is for an event, add event details to the response
+            if ($event_id) {
+                try {
+                    $db = new Database();
+                    $conn = $db->getConnection();
+                    $stmt = $conn->prepare("SELECT event_id, event_name, start_date, end_date FROM events WHERE event_id = ?");
+                    $stmt->execute([$event_id]);
+                    $event = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($event) {
+                        $response['event_id'] = $event['event_id'];
+                        $response['event_name'] = $event['event_name'];
+                        $response['event_date'] = date('F j, Y', strtotime($event['start_date']));
+                        if ($event['end_date'] && $event['end_date'] !== $event['start_date']) {
+                            $response['event_date'] .= ' - ' . date('F j, Y', strtotime($event['end_date']));
+                        }
+                        $response['message'] = 'Event attendance recorded successfully';
+                    }
+                } catch (Exception $e) {
+                    // If there's an error fetching event details, just log it and continue
+                    error_log("Error fetching event details: " . $e->getMessage());
+                }
+            }
+            
+            echo json_encode($response);
         } else {
             // Return error response
             echo json_encode([

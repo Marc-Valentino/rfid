@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
 
 require_once '../config/database.php';
 require_once '../includes/functions.php';
@@ -19,11 +19,19 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Get JSON input
-$input = json_decode(file_get_contents('php://input'), true);
+// Check if we're receiving JSON or form data
+$isJson = strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false;
+
+if ($isJson) {
+    // Get JSON input
+    $input = json_decode(file_get_contents('php://input'), true);
+} else {
+    // Get form data
+    $input = $_POST;
+}
 
 // Validate required fields
-if (!$input || !isset($input['rfid_uid']) || !isset($input['first_name']) || 
+if (!isset($input['rfid_uid']) || !isset($input['first_name']) || 
     !isset($input['last_name']) || !isset($input['student_number'])) {
     echo json_encode(['success' => false, 'message' => 'Required fields are missing']);
     exit;
@@ -39,6 +47,31 @@ $phone = isset($input['phone']) ? $attendanceSystem->sanitizeInput($input['phone
 $department_id = isset($input['department_id']) ? (int)$input['department_id'] : null;
 $course_id = isset($input['course_id']) ? (int)$input['course_id'] : null;
 $year_level = isset($input['year_level']) ? $attendanceSystem->sanitizeInput($input['year_level']) : null;
+
+// Handle file upload
+$profile_image = null;
+$profile_image_path = null;
+
+if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
+    $file = $_FILES['profile_image'];
+    $fileExt = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    $allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
+    
+    if (in_array($fileExt, $allowedExts)) {
+        $uploadDir = '../uploads/students/';
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        
+        $newFilename = uniqid('student_') . '.' . $fileExt;
+        $targetPath = $uploadDir . $newFilename;
+        
+        if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+            $profile_image = $newFilename;
+            $profile_image_path = 'uploads/students/' . $newFilename;
+        }
+    }
+}
 
 try {
     // Create database connection
@@ -62,11 +95,22 @@ try {
         exit;
     }
     
-    // Insert new student
+    // Insert new student with profile image
     $stmt = $pdo->prepare("INSERT INTO students 
-        (student_number, first_name, last_name, email, phone, department_id, course_id, year_level, enrollment_status) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Active')");
-    $stmt->execute([$student_number, $first_name, $last_name, $email, $phone, $department_id, $course_id, $year_level]);
+        (student_number, first_name, last_name, email, phone, department_id, course_id, year_level, enrollment_status, profile_image, profile_image_path) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Active', ?, ?)");
+    $stmt->execute([
+        $student_number, 
+        $first_name, 
+        $last_name, 
+        $email, 
+        $phone, 
+        $department_id, 
+        $course_id, 
+        $year_level,
+        $profile_image,
+        $profile_image_path
+    ]);
     $student_id = $pdo->lastInsertId();
     
     // Check if RFID card exists but is unassigned
@@ -94,12 +138,9 @@ try {
     
     $pdo->commit();
     
-    // Record attendance for the newly registered student
-    $attendanceSystem->recordAttendance($student_id, $rfid_uid, 'Time In');
-    
     echo json_encode([
         'success' => true,
-        'message' => 'Student registered successfully and attendance recorded',
+        'message' => 'Student registered successfully',
         'data' => [
             'student_id' => $student_id,
             'student_number' => $student_number,

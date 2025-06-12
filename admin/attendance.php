@@ -32,13 +32,16 @@ try {
     
     $sql = "
         SELECT ar.attendance_id, ar.student_id, ar.attendance_type, ar.scan_time,
-               ar.location, ar.verification_status, ar.notes,
-               s.student_number, s.first_name, s.last_name,
-               d.department_name, c.course_name
+               ar.location, ar.verification_status, ar.notes, ar.photo_path,
+               s.student_number, s.first_name, s.last_name, s.photo as student_photo,
+               d.department_name, c.course_name,
+               e.event_id, e.event_name, e.start_date as event_start, e.end_date as event_end
         FROM attendance_records ar
         JOIN students s ON ar.student_id = s.student_id
         LEFT JOIN departments d ON s.department_id = d.department_id
         LEFT JOIN courses c ON s.course_id = c.course_id
+        LEFT JOIN event_attendance ea ON ar.attendance_id = ea.attendance_id
+        LEFT JOIN events e ON ea.event_id = e.event_id
         WHERE {$where_clause}
         ORDER BY ar.scan_time DESC
     ";
@@ -284,6 +287,7 @@ try {
                                         <i class="fas fa-wifi"></i> Scan Attendance
                                     </a>
                                 </div>
+                                
                             </div>
                             <!-- Add Clear Attendance Button -->
                             <div class="col-md-2">
@@ -318,8 +322,10 @@ try {
                                         <tr>
                                             <th>Student</th>
                                             <th>Department</th>
+                                            <th>Event</th>
                                             <th>Type</th>
                                             <th>Time</th>
+                                            <th>Photo</th>
                                             <th>Location</th>
                                             <th>Status</th>
                                         </tr>
@@ -333,6 +339,20 @@ try {
                                                 </td>
                                                 <td><?php echo htmlspecialchars($record['department_name'] ?? 'N/A'); ?></td>
                                                 <td>
+                                                    <?php if (!empty($record['event_name'])): ?>
+                                                        <span class="badge bg-info"><?php echo htmlspecialchars($record['event_name']); ?></span>
+                                                        <small class="d-block text-muted">
+                                                            <?php 
+                                                                $start = new DateTime($record['event_start']);
+                                                                $end = new DateTime($record['event_end']);
+                                                                echo $start->format('M j, Y') . ' - ' . $end->format('M j, Y');
+                                                            ?>
+                                                        </small>
+                                                    <?php else: ?>
+                                                        <span class="text-muted">Regular</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td>
                                                     <?php 
                                                         $type = $record['attendance_type'];
                                                         $badgeClass = ($type == 'Time In') ? 'bg-success' : 'bg-info';
@@ -342,6 +362,16 @@ try {
                                                     </span>
                                                 </td>
                                                 <td><?php echo date('h:i A', strtotime($record['scan_time'])); ?></td>
+                                                <td>
+                                                    <?php 
+                                                        $photoPath = !empty($record['photo_path']) ? $record['photo_path'] : 
+                                                                    (!empty($record['student_photo']) ? '../' . $record['student_photo'] : '../assets/img/default-avatar.png');
+                                                    ?>
+                                                    <img src="<?php echo htmlspecialchars($photoPath); ?>" 
+                                                         alt="Student Photo" 
+                                                         class="rounded-circle" 
+                                                         style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #495057;">
+                                                </td>
                                                 <td><?php echo htmlspecialchars($record['location'] ?? 'Main Campus'); ?></td>
                                                 <td>
                                                     <span class="badge bg-success">Verified</span>

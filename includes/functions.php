@@ -158,7 +158,16 @@ class AttendanceSystem {
         }
     }
     
-    public function recordAttendanceByRFID($rfid_uid, $reader_id = 1, $attendance_type = 'Time In') {
+    /**
+     * Record attendance by RFID UID with optional event ID
+     * 
+     * @param string $rfid_uid RFID UID of the card
+     * @param int $reader_id Reader ID (default: 1)
+     * @param string $attendance_type 'Time In' or 'Time Out' (default: 'Time In')
+     * @param int|null $event_id Optional event ID for event-specific attendance
+     * @return array Result with success status and message
+     */
+    public function recordAttendanceByRFID($rfid_uid, $reader_id = 1, $attendance_type = 'Time In', $event_id = null) {
         try {
             // Check if reader exists, if not create it
             $query = "SELECT COUNT(*) FROM rfid_readers WHERE reader_id = :reader_id";
@@ -215,27 +224,40 @@ class AttendanceSystem {
             // Record attendance
             $this->db->beginTransaction();
             
-            // Insert attendance record
-            $query = "INSERT INTO attendance_records 
-                     (student_id, rfid_uid, reader_id, attendance_type, attendance_date, location, ip_address) 
-                     VALUES (:student_id, :rfid_uid, :reader_id, :attendance_type, CURDATE(), 'Main Entrance', :ip_address)";
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':student_id', $student['student_id']);
-            $stmt->bindParam(':rfid_uid', $rfid_uid);
-            $stmt->bindParam(':reader_id', $reader_id);
-            $stmt->bindParam(':attendance_type', $attendance_type);
-            $stmt->bindParam(':ip_address', $_SERVER['REMOTE_ADDR']);
-            $stmt->execute();
-            
-            $attendance_id = $this->db->lastInsertId();
-            
-            // Update daily summary
-            $this->updateDailySummary($student['student_id']);
-            
-            // Update RFID card last used
-            $this->updateRFIDLastUsed($rfid_uid);
-            
-            $this->db->commit();
+            try {
+                // Insert attendance record
+                $query = "INSERT INTO attendance_records 
+                         (student_id, rfid_uid, reader_id, attendance_type, attendance_date, location, ip_address) 
+                         VALUES (:student_id, :rfid_uid, :reader_id, :attendance_type, CURDATE(), 'Main Entrance', :ip_address)";
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(':student_id', $student['student_id']);
+                $stmt->bindParam(':rfid_uid', $rfid_uid);
+                $stmt->bindParam(':reader_id', $reader_id);
+                $stmt->bindParam(':attendance_type', $attendance_type);
+                $stmt->bindParam(':ip_address', $_SERVER['REMOTE_ADDR']);
+                $stmt->execute();
+                
+                $attendance_id = $this->db->lastInsertId();
+                
+                // If this is for an event, record event attendance
+                if ($event_id) {
+                    $eventResult = $this->recordEventAttendance($student['student_id'], $event_id, $attendance_type);
+                    if (!$eventResult['success']) {
+                        throw new Exception($eventResult['message']);
+                    }
+                }
+                
+                // Update daily summary
+                $this->updateDailySummary($student['student_id']);
+                
+                // Update RFID card last used
+                $this->updateRFIDLastUsed($rfid_uid);
+                
+                $this->db->commit();
+            } catch (Exception $e) {
+                $this->db->rollBack();
+                throw $e;
+            }
             
             return [
                 'success' => true,
@@ -294,6 +316,144 @@ class AttendanceSystem {
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':rfid_uid', $rfid_uid);
         $stmt->execute();
+    }
+    
+    /**
+     * Record attendance for a specific event
+     * 
+     * @param int $student_id Student ID
+     * @param int $event_id Event ID
+     * @param string $attendance_type 'Time In' or 'Time Out'
+     * @return array Result with success status and message
+     */
+    public function recordEventAttendance($student_id, $event_id, $attendance_type = 'Time In') {
+        try {
+            $current_time = date('Y-m-d H:i:s');
+            
+            // Check if the event exists and is active
+            $eventQuery = "SELECT * FROM events WHERE event_id = :event_id AND is_active = 1";
+            $stmt = $this->db->prepare($eventQuery);
+            $stmt->bindParam(':event_id', $event_id, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            if ($stmt->rowCount() === 0) {
+                throw new Exception('Event not found or inactive');
+            }
+            
+            $event = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Check if there's an existing registration for this student and event
+            $registrationQuery = "SELECT * FROM event_registrations 
+                                WHERE event_id = :event_id 
+                                AND student_id = :student_id";
+            $stmt = $this->db->prepare($registrationQuery);
+            $stmt->bindParam(':event_id', $event_id, PDO::PARAM_INT);
+            $stmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            if ($stmt->rowCount() === 0) {
+                // Auto-register the student for the event if not already registered
+                $registerQuery = "INSERT INTO event_registrations 
+                                 (event_id, student_id, registration_date, registration_status, attendance_status)
+                                 VALUES (:event_id, :student_id, NOW(), 'Confirmed', 'Registered')";
+                $registerStmt = $this->db->prepare($registerQuery);
+                $registerStmt->bindParam(':event_id', $event_id, PDO::PARAM_INT);
+                $registerStmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+                $registerStmt->execute();
+            }
+            
+            // Check if there's an existing attendance record for today
+            $today = date('Y-m-d');
+            $attendanceQuery = "SELECT * FROM event_attendance 
+                              WHERE event_id = :event_id 
+                              AND student_id = :student_id 
+                              AND DATE(time_in) = :today";
+            $stmt = $this->db->prepare($attendanceQuery);
+            $stmt->bindParam(':event_id', $event_id, PDO::PARAM_INT);
+            $stmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+            $stmt->bindParam(':today', $today);
+            $stmt->execute();
+            
+            if ($attendance_type === 'Time In') {
+                if ($stmt->rowCount() > 0) {
+                    // Update existing attendance record
+                    $attendance = $stmt->fetch(PDO::FETCH_ASSOC);
+                    $updateQuery = "UPDATE event_attendance 
+                                   SET time_in = :time_in, 
+                                       attendance_status = 'Present',
+                                       updated_at = NOW()
+                                   WHERE attendance_id = :attendance_id";
+                    $updateStmt = $this->db->prepare($updateQuery);
+                    $updateStmt->bindParam(':time_in', $current_time);
+                    $updateStmt->bindParam(':attendance_id', $attendance['attendance_id'], PDO::PARAM_INT);
+                    $updateStmt->execute();
+                } else {
+                    // Create new attendance record
+                    $insertQuery = "INSERT INTO event_attendance 
+                                   (event_id, student_id, time_in, attendance_status, created_at, updated_at)
+                                   VALUES (:event_id, :student_id, :time_in, 'Present', NOW(), NOW())";
+                    $insertStmt = $this->db->prepare($insertQuery);
+                    $insertStmt->bindParam(':event_id', $event_id, PDO::PARAM_INT);
+                    $insertStmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+                    $insertStmt->bindParam(':time_in', $current_time);
+                    $insertStmt->execute();
+                }
+                
+                // Update registration status to 'Attended'
+                $updateRegQuery = "UPDATE event_registrations 
+                                 SET attendance_status = 'Attended', 
+                                     check_in_time = :check_in_time,
+                                     updated_at = NOW()
+                                 WHERE event_id = :event_id 
+                                 AND student_id = :student_id";
+                $updateRegStmt = $this->db->prepare($updateRegQuery);
+                $updateRegStmt->bindParam(':check_in_time', $current_time);
+                $updateRegStmt->bindParam(':event_id', $event_id, PDO::PARAM_INT);
+                $updateRegStmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+                $updateRegStmt->execute();
+                
+            } elseif ($attendance_type === 'Time Out') {
+                // Update time out for the most recent attendance record
+                $updateQuery = "UPDATE event_attendance 
+                               SET time_out = :time_out, 
+                                   updated_at = NOW()
+                               WHERE event_id = :event_id 
+                               AND student_id = :student_id 
+                               AND DATE(time_in) = :today
+                               ORDER BY time_in DESC 
+                               LIMIT 1";
+                $updateStmt = $this->db->prepare($updateQuery);
+                $updateStmt->bindParam(':time_out', $current_time);
+                $updateStmt->bindParam(':event_id', $event_id, PDO::PARAM_INT);
+                $updateStmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+                $updateStmt->bindParam(':today', $today);
+                $updateStmt->execute();
+                
+                // Update registration check out time
+                $updateRegQuery = "UPDATE event_registrations 
+                                 SET check_out_time = :check_out_time,
+                                     updated_at = NOW()
+                                 WHERE event_id = :event_id 
+                                 AND student_id = :student_id";
+                $updateRegStmt = $this->db->prepare($updateRegQuery);
+                $updateRegStmt->bindParam(':check_out_time', $current_time);
+                $updateRegStmt->bindParam(':event_id', $event_id, PDO::PARAM_INT);
+                $updateRegStmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+                $updateRegStmt->execute();
+            }
+            
+            return [
+                'success' => true,
+                'message' => 'Event attendance recorded successfully'
+            ];
+            
+        } catch (Exception $e) {
+            error_log("Event attendance error: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Error recording event attendance: ' . $e->getMessage()
+            ];
+        }
     }
 
     public function getTodayAttendance($limit = 50) {

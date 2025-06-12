@@ -301,7 +301,27 @@ if (isset($_POST['rfid'])) {
                 <!-- Scanner Interface -->
                 <div class="row justify-content-center mb-4">
                     <div class="col-md-8">
-                        <!-- Replace the scanner card div with this updated version -->
+                        <!-- Event Selection Dropdown -->
+                        <div class="mb-4">
+                            
+                                <?php
+                                // Fetch active events from the database
+                                $eventsQuery = $pdo->query("SELECT event_id, event_name, start_date, end_date FROM events WHERE is_active = 1 AND end_date >= CURDATE() ORDER BY start_date");
+                                while ($event = $eventsQuery->fetch(PDO::FETCH_ASSOC)) {
+                                    $startDate = new DateTime($event['start_date']);
+                                    $endDate = new DateTime($event['end_date']);
+                                    echo "<option value='" . $event['event_id'] . "'>" . 
+                                         htmlspecialchars($event['event_name']) . " (" . 
+                                         $startDate->format('M j') . " - " . 
+                                         $endDate->format('M j, Y') . 
+                                         ")</option>";
+                                }
+                                ?>
+                            </select>
+                            <div class="invalid-feedback">Please select an event before scanning.</div>
+                        </div>
+                        
+                        <!-- Scanner Card -->
                         <div class="scanner-card">
                             <!-- Add Attendance Mode Buttons -->
                             <div class="btn-group mb-4" role="group" aria-label="Attendance Mode">
@@ -451,23 +471,46 @@ if (isset($_POST['rfid'])) {
                                 // Update scan result display
                                 scanResult.classList.remove('d-none');
                                 
+                                // Get current attendance mode and event info
+                                const currentMode = document.querySelector('.attendance-mode.active').dataset.mode;
+                                const eventSelect = document.getElementById('eventSelect');
+                                const eventName = eventSelect.options[eventSelect.selectedIndex]?.text.split(' (')[0] || 'Selected Event';
+                                
+                                // Handle unregistered card
                                 if (result.status === 'unregistered') {
-                                    // Show registration form for unregistered card
-                                    scanStatus.innerHTML = '<i class="fas fa-user-plus scanner-icon text-info"></i>' +
-                                              '<h4 class="text-light mb-4">New RFID Card Detected</h4>';
+                                    // Show registration form in modal for unregistered card
+                                    document.getElementById('rfidUidDisplay').textContent = `RFID UID: ${result.rfid_uid}`;
                                     
-                                    scanResult.innerHTML = `
+                                    const formHtml = `
                                         <div class="alert alert-info mb-3">
                                             <h5><i class="fas fa-info-circle me-2"></i>Unregistered RFID Card</h5>
-                                            <p>This card (UID: ${result.rfid_uid}) is not registered in the system.</p>
+                                            <p>This card is not registered in the system. Please complete the registration form below.</p>
                                         </div>
                                         <div class="card bg-dark">
                                             <div class="card-header bg-primary text-white">
                                                 <h5 class="mb-0">Student Registration Form</h5>
                                             </div>
                                             <div class="card-body">
-                                                <form id="rfidRegistrationForm">
+                                                <form id="rfidRegistrationForm" enctype="multipart/form-data">
                                                     <input type="hidden" name="rfid_uid" value="${result.rfid_uid}">
+                                                    
+                                                    <!-- Profile Picture Upload -->
+                                                    <div class="row mb-4">
+                                                        <div class="col-12 text-center">
+                                                            <div class="mb-3">
+                                                                <div class="position-relative d-inline-block">
+                                                                    <img id="profileImagePreview" src="../assets/img/default-avatar.png" 
+                                                                         class="rounded-circle border border-4 border-primary" 
+                                                                         style="width: 150px; height: 150px; object-fit: cover;"
+                                                                         alt="Profile Picture">
+                                                                    <label for="profile_image" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2" style="cursor: pointer;">
+                                                                        <i class="fas fa-camera"></i>
+                                                                    </label>
+                                                                    <input type="file" class="d-none" id="profile_image" name="profile_image" accept="image/*" onchange="previewImage(this)">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     
                                                     <div class="row mb-3">
                                                         <div class="col-md-6 mb-3 mb-md-0">
@@ -482,7 +525,6 @@ if (isset($_POST['rfid'])) {
                                                                 <option value="2nd Year">2nd Year</option>
                                                                 <option value="3rd Year">3rd Year</option>
                                                                 <option value="4th Year">4th Year</option>
-                                                                
                                                             </select>
                                                         </div>
                                                     </div>
@@ -495,6 +537,17 @@ if (isset($_POST['rfid'])) {
                                                         <div class="col-md-6">
                                                             <label for="last_name" class="form-label">Last Name *</label>
                                                             <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label for="profile_image" class="form-label">Profile Picture</label>
+                                                        <div class="input-group">
+                                                            <input type="file" class="form-control" id="profile_image" name="profile_image" accept="image/*" onchange="previewImage(this)">
+                                                        </div>
+                                                        <small class="text-muted">Max size: 2MB. Allowed formats: JPG, JPEG, PNG, GIF</small>
+                                                        <div class="mt-2 text-center" id="imagePreviewContainer" style="display: none;">
+                                                            <img id="imagePreview" src="#" alt="Preview" class="img-thumbnail" style="max-height: 200px;">
                                                         </div>
                                                     </div>
                                                     
@@ -526,19 +579,27 @@ if (isset($_POST['rfid'])) {
                                                         </div>
                                                     </div>
                                                     
-                                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                                        <button type="button" class="btn btn-secondary" onclick="cancelRegistration()">
-                                                            <i class="fas fa-times me-2"></i>Cancel
-                                                        </button>
-                                                        <button type="submit" class="btn btn-primary">
-                                                            <i class="fas fa-save me-2"></i>Register & Record Attendance
-                                                        </button>
+                                                    <div class="row mb-3">
+                                                        <div class="col-12">
+                                                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                                <button type="button" class="btn btn-secondary me-md-2" onclick="cancelRegistration()">
+                                                                    <i class="fas fa-times me-2"></i>Cancel
+                                                                </button>
+                                                                <button type="submit" class="btn btn-primary">
+                                                                    <i class="fas fa-save me-2"></i>Register
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </form>
                                                 <div id="registrationMessage" class="mt-3 d-none"></div>
                                             </div>
                                         </div>
                                     `;
+                                    
+                                    // Set the form HTML and show modal
+                                    document.getElementById('scanResult').innerHTML = formHtml;
+                                    registrationModal.show();
                                     
                                     // Load departments and courses
                                     loadDepartmentsAndCourses();
@@ -550,17 +611,46 @@ if (isset($_POST['rfid'])) {
                                     });
                                 } else {
                                     // Regular scan result (success or error)
+                                    const isEvent = result.event_id || result.event_name;
+                                    const eventInfo = isEvent ? `
+                                        <div class="alert ${result.success ? 'alert-info' : 'alert-warning'} mb-3">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-calendar-check fa-2x me-3"></i>
+                                                <div>
+                                                    <h5 class="mb-1">${result.event_name || 'Event Attendance'}</h5>
+                                                    ${result.event_date ? `<p class="mb-0">${result.event_date}</p>` : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ` : '';
+                                    
                                     scanResult.innerHTML = `
+                                        ${eventInfo}
                                         <div class="alert alert-${result.success ? 'success' : 'danger'} mb-3">
                                             <h4 class="alert-heading">
-                                                <i class="fas fa-${result.success ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
-                                                ${result.success ? 'Scan Successful!' : 'Scan Failed!'}
+                                                <i class="fas fa-${result.success ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                                                ${result.success ? 'Success!' : 'Error'}
                                             </h4>
-                                            <p class="mb-2">${result.message}</p>
-                                            ${result.data && result.data.student_name ? `<p class="mb-1"><strong>Student:</strong> ${result.data.student_name}</p>` : ''}
-                                            ${result.data && result.data.student_number ? `<p class="mb-1"><strong>ID:</strong> ${result.data.student_number}</p>` : ''}
-                                            ${result.data && result.data.attendance_type ? `<p class="mb-0"><strong>Type:</strong> ${result.data.attendance_type}</p>` : ''}
-                                            ${result.rfid_uid || (result.data && result.data.rfid_uid) ? `<p class="mb-0"><strong>RFID UID:</strong> ${result.rfid_uid || result.data.rfid_uid}</p>` : ''}
+                                            <p class="mb-2">
+                                                ${result.message || (result.success ? 
+                                                    (isEvent ? 'Event attendance recorded successfully' : 'Scan processed successfully') : 
+                                                    'An error occurred')}
+                                            </p>
+                                            ${result.student_name ? `
+                                                <hr>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <p class="mb-1"><strong>Student ID:</strong> ${result.student_id || 'N/A'}</p>
+                                                        <p class="mb-1"><strong>Name:</strong> ${result.student_name}</p>
+                                                        <p class="mb-1"><strong>Department:</strong> ${result.department_name || 'N/A'}</p>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <p class="mb-1"><strong>${isEvent ? 'Event' : 'Course'}:</strong> ${isEvent ? (result.event_name || 'N/A') : (result.course_name || 'N/A')}</p>
+                                                        <p class="mb-1"><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+                                                        <p class="mb-1"><strong>Status:</strong> ${result.attendance_type || 'N/A'}</p>
+                                                    </div>
+                                                </div>
+                                            ` : ''}
                                         </div>
                                     `;
                                     
@@ -669,17 +759,61 @@ if (isset($_POST['rfid'])) {
                             
                             // Update the processRFIDScan function
 function processRFIDScan(rfidUid) {
+    // Get the selected event ID
+    const eventSelect = document.getElementById('eventSelect');
+    const eventId = eventSelect.value;
+    
+    if (!eventId) {
+        // Show error if no event is selected
+        const scanResult = document.getElementById('scanResult');
+        scanResult.classList.remove('d-none');
+        scanResult.innerHTML = `
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Event Required</strong><br>
+                Please select an event before scanning an RFID card.
+            </div>
+        `;
+        // Scroll to the error message
+        scanResult.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return Promise.reject('No event selected');
+    }
+    
     // Get the current attendance mode from the active button
     const currentMode = document.querySelector('.attendance-mode.active').dataset.mode;
+    const attendanceType = currentMode === 'Time In' ? 'Time In' : 'Time Out';
     
-    fetch('../api/rfid-scan.php', {
+    // Show scanning status
+    const scanStatus = document.getElementById('scanStatus');
+    scanStatus.innerHTML = `
+        <i class="fas fa-spinner fa-spin scanner-icon"></i>
+        <h4 class="text-light mb-4">Processing ${attendanceType}...</h4>
+        <p class="text-muted">Please wait while we process your request.</p>
+    `;
+    
+    // Show the scan result container
+    const scanResult = document.getElementById('scanResult');
+    scanResult.classList.remove('d-none');
+    scanResult.innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Processing RFID scan, please wait...</p>
+        </div>
+    `;
+    
+    // Make the API request
+    return fetch('../api/rfid-scan.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             rfid_uid: rfidUid,
-            attendance_type: currentMode // This will be either 'Time In' or 'Time Out'
+            attendance_type: attendanceType,
+            reader_id: 1,
+            event_id: eventId  // Include the selected event ID
         })
     })
     .then(response => response.json())
@@ -807,50 +941,101 @@ function registerStudent(form) {
                     </div>
                 </div>
 
-                <!-- Replace the Recent Scans Table with Attendance Table -->
+                <!-- Attendance Records Table -->
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header bg-primary text-white">
                         <h5 class="mb-0">
                             <i class="fas fa-clipboard-list me-2"></i>Attendance Records
                         </h5>
                     </div>
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div class="input-group" style="max-width: 300px;">
+                        <div class="d-flex flex-wrap gap-3 align-items-center mb-3">
+                            <div class="input-group" style="width: 250px;">
                                 <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                                 <input type="date" id="attendanceDate" class="form-control" value="<?php echo date('Y-m-d'); ?>" />
                             </div>
-                            <div class="d-flex">
-                                <button id="prevPage" class="btn btn-sm btn-outline-primary me-2">
-                                    <i class="fas fa-chevron-left"></i> Previous
+                            <div class="input-group" style="width: 350px;">
+                                <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
+                                <select class="form-select" id="eventSelect">
+                                    <option value="">-- All Events --</option>
+                                    <?php
+                                    // Fetch active events
+                                    $eventsQuery = $pdo->query("SELECT event_id, event_name, start_date, end_date 
+                                                             FROM events 
+                                                             WHERE is_active = 1 AND end_date >= CURDATE() 
+                                                             ORDER BY start_date");
+                                    while ($event = $eventsQuery->fetch(PDO::FETCH_ASSOC)) {
+                                        $startDate = date('M d', strtotime($event['start_date']));
+                                        $endDate = date('M d, Y', strtotime($event['end_date']));
+                                        echo "<option value='{$event['event_id']}'>
+                                                {$event['event_name']} ($startDate - $endDate)
+                                              </option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="d-flex ms-auto gap-2">
+                                <button id="refreshBtn" class="btn btn-outline-light" title="Refresh">
+                                    <i class="fas fa-sync-alt"></i>
                                 </button>
-                                <span id="recordsInfo" class="text-muted align-self-center me-2">Loading...</span>
-                                <button id="nextPage" class="btn btn-sm btn-outline-primary">
-                                    Next <i class="fas fa-chevron-right"></i>
+                                <button id="exportBtn" class="btn btn-outline-light" title="Export to Excel">
+                                    <i class="fas fa-file-export"></i>
                                 </button>
+                                <div class="btn-group" role="group">
+                                    <button id="prevPage" class="btn btn-outline-light" title="Previous Page">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button id="nextPage" class="btn btn-outline-light" title="Next Page">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-dark table-striped">
-                                <thead>
+                            <table class="table table-hover align-middle">
+                                <thead class="table-dark">
                                     <tr>
-                                        <th>Time</th>
-                                        <th>Student</th>
-                                        <th>Student ID</th>
-                                        <th>Department</th>
-                                        <th>Course</th>
-                                        <th>Type</th>
-                                        <th>Status</th>
+                                        <th width="5%">#</th>
+                                        <th width="10%">Student ID</th>
+                                        <th width="20%">Name</th>
+                                        <th width="15%">Course</th>
+                                        <th width="15%">RFID UID</th>
+                                        <th width="15%">Time In</th>
+                                        <th width="15%">Time Out</th>
+                                        <th width="10%">Status</th>
+                                        <th width="5%" class="text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="attendanceRecords">
+                                    <!-- Attendance records will be loaded here via JavaScript -->
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted py-4">
-                                            <i class="fas fa-spinner fa-spin fa-2x mb-2"></i><br>
-                                            Loading attendance records...
+                                        <td colspan="9" class="text-center py-4">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p class="mt-2 mb-0">Loading attendance data...</p>
                                         </td>
                                     </tr>
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="9" class="text-end">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="text-muted small">
+                                                    Showing <span id="showingFrom">0</span> to <span id="showingTo">0</span> of <span id="totalRecords">0</span> records
+                                                </div>
+                                                <div class="btn-group">
+                                                    <select id="pageSize" class="form-select form-select-sm" style="width: auto;">
+                                                        <option value="10">10 per page</option>
+                                                        <option value="25">25 per page</option>
+                                                        <option value="50">50 per page</option>
+                                                        <option value="100">100 per page</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -860,13 +1045,33 @@ function registerStudent(form) {
     </div>
 
     <!-- Custom JavaScript for RFID scanning -->
+    <!-- Registration Modal -->
+    <div class="modal fade" id="registrationModal" tabindex="-1" aria-labelledby="registrationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="registrationModalLabel">
+                        <i class="fas fa-user-plus me-2"></i>Register New Student
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="scanStatus" class="text-center mb-4">
+                        <i class="fas fa-user-plus fa-4x text-info mb-3"></i>
+                        <h4 class="text-light">New RFID Card Detected</h4>
+                        <p class="text-muted mb-0" id="rfidUidDisplay"></p>
+                    </div>
+                    <div id="scanResult">
+                        <!-- Registration form will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/js/rfid-reader.js"></script>
-    <!-- Add this to the head section -->
     <style>
-        /* Add styles for the registration form */
-        .registration-form {
-            background: rgba(0, 0, 0, 0.2);
+        .scanner-card {
             border-radius: 15px;
             padding: 20px;
             margin-top: 20px;
@@ -878,6 +1083,41 @@ function registerStudent(form) {
 
     <!-- Update the JavaScript section at the bottom of the file -->
     <script>
+        // Initialize registration modal
+        let registrationModal;
+        
+        // Initialize modal when document is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            registrationModal = new bootstrap.Modal(document.getElementById('registrationModal'));
+            
+            // Close modal when clicking outside
+            document.getElementById('registrationModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    registrationModal.hide();
+                }
+            });
+        });
+        
+        // Function to preview selected image
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = '#';
+                previewContainer.style.display = 'none';
+            }
+        }
+
         // Function to start RFID scanning
         function startRFIDScan() {
             const scanStatus = document.getElementById('scanStatus');
@@ -981,21 +1221,20 @@ function registerStudent(form) {
             scanResult.classList.remove('d-none');
             
             if (result.status === 'unregistered') {
-                // Show registration form for unregistered card
-                scanStatus.innerHTML = '<i class="fas fa-user-plus scanner-icon text-info"></i>' +
-                                      '<h4 class="text-light mb-4">New RFID Card Detected</h4>';
+                // Show registration form in modal for unregistered card
+                document.getElementById('rfidUidDisplay').textContent = `RFID UID: ${result.rfid_uid}`;
                 
-                scanResult.innerHTML = `
+                const formHtml = `
                     <div class="alert alert-info mb-3">
                         <h5><i class="fas fa-info-circle me-2"></i>Unregistered RFID Card</h5>
-                        <p>This card (UID: ${result.rfid_uid}) is not registered in the system.</p>
+                        <p>This card is not registered in the system. Please complete the registration form below.</p>
                     </div>
                     <div class="card bg-dark">
                         <div class="card-header bg-primary text-white">
                             <h5 class="mb-0">Student Registration Form</h5>
                         </div>
                         <div class="card-body">
-                            <form id="rfidRegistrationForm">
+                            <form id="rfidRegistrationForm" enctype="multipart/form-data">
                                 <input type="hidden" name="rfid_uid" value="${result.rfid_uid}">
                                 
                                 <div class="row mb-3">
@@ -1011,7 +1250,6 @@ function registerStudent(form) {
                                             <option value="2nd Year">2nd Year</option>
                                             <option value="3rd Year">3rd Year</option>
                                             <option value="4th Year">4th Year</option>
-                                            
                                         </select>
                                     </div>
                                 </div>
@@ -1024,6 +1262,17 @@ function registerStudent(form) {
                                     <div class="col-md-6">
                                         <label for="last_name" class="form-label">Last Name *</label>
                                         <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="profile_image" class="form-label">Profile Picture</label>
+                                    <div class="input-group">
+                                        <input type="file" class="form-control" id="profile_image" name="profile_image" accept="image/*" onchange="previewImage(this)">
+                                    </div>
+                                    <small class="text-muted">Max size: 2MB. Allowed formats: JPG, JPEG, PNG, GIF</small>
+                                    <div class="mt-2 text-center" id="imagePreviewContainer" style="display: none;">
+                                        <img id="imagePreview" src="#" alt="Preview" class="img-thumbnail" style="max-height: 200px;">
                                     </div>
                                 </div>
                                 
@@ -1055,13 +1304,17 @@ function registerStudent(form) {
                                     </div>
                                 </div>
                                 
-                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                    <button type="button" class="btn btn-secondary" onclick="cancelRegistration()">
-                                        <i class="fas fa-times me-2"></i>Cancel
-                                    </button>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-2"></i>Register & Record Attendance
-                                    </button>
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            <button type="button" class="btn btn-secondary me-md-2" onclick="cancelRegistration()">
+                                                <i class="fas fa-times me-2"></i>Cancel
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-2"></i>Register
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </form>
                             <div id="registrationMessage" class="mt-3 d-none"></div>
@@ -1069,14 +1322,21 @@ function registerStudent(form) {
                     </div>
                 `;
                 
+                // Set the form HTML and show modal
+                document.getElementById('scanResult').innerHTML = formHtml;
+                registrationModal.show();
+                
                 // Load departments and courses
                 loadDepartmentsAndCourses();
                 
-                // Add event listener for form submission
-                document.getElementById('rfidRegistrationForm').addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    registerStudent(this);
-                });
+                // Add form submit event listener
+                const form = document.getElementById('rfidRegistrationForm');
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        registerStudent(this);
+                    });
+                }
             } else {
                 // Regular scan result (success or error)
                 scanResult.innerHTML = `
@@ -1199,11 +1459,18 @@ function registerStudent(form) {
         // Function to register a student
 function registerStudent(form) {
     const formData = new FormData(form);
-    const registrationData = {};
+    const registrationData = new FormData();
     
+    // Convert FormData to object and add to registrationData
+    const formDataObj = {};
     formData.forEach((value, key) => {
-        registrationData[key] = value;
+        formDataObj[key] = value;
     });
+    
+    // Add all form fields to FormData
+    for (const key in formDataObj) {
+        registrationData.append(key, formDataObj[key]);
+    }
     
     // Show loading state
     const submitBtn = form.querySelector('button[type="submit"]');
@@ -1214,13 +1481,35 @@ function registerStudent(form) {
     // Show success flag
     let registrationSuccessful = false;
 
-    // Send registration request
+    // Validate image file if present
+    const fileInput = document.getElementById('profile_image');
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        
+        if (!validTypes.includes(file.type)) {
+            showRegistrationMessage('Invalid file type. Please upload a JPG, PNG, or GIF image.', 'danger');
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+            return false;
+        }
+        
+        if (file.size > maxSize) {
+            showRegistrationMessage('File is too large. Maximum size is 2MB.', 'danger');
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+            return false;
+        }
+        
+        // Add the file to the form data
+        registrationData.append('profile_image', file);
+    }
+
+    // Send registration request with FormData
     fetch('../api/register-rfid.php', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(registrationData)
+        body: registrationData
     })
     .then(async response => {
         const responseContent = await response.text();
