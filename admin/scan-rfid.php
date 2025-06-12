@@ -90,6 +90,9 @@ if (isset($_POST['rfid'])) {
     <title>RFID Scanner - <?php echo APP_NAME; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
     <style>
         body {
             background: #1a1a1a;
@@ -193,6 +196,23 @@ if (isset($_POST['rfid'])) {
         /* Remove yellow indicator */
         .type-indicator {
             display: none;
+        }
+        
+        /* Toast Notification Styles */
+        .toastify {
+            padding: 12px 20px;
+            color: #ffffff;
+            font-size: 14px;
+            border-radius: 8px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .toastify.success {
+            background: linear-gradient(to right, #28a745, #20c997);
+        }
+        
+        .toastify.error {
+            background: linear-gradient(to right, #dc3545, #c82333);
         }
     </style>
 </head>
@@ -453,7 +473,7 @@ if (isset($_POST['rfid'])) {
                                                                 <option value="2nd Year">2nd Year</option>
                                                                 <option value="3rd Year">3rd Year</option>
                                                                 <option value="4th Year">4th Year</option>
-                                                                <option value="5th Year">5th Year</option>
+                                                                
                                                             </select>
                                                         </div>
                                                     </div>
@@ -664,7 +684,7 @@ function processRFIDScan(rfidUid) {
     });
 }
 
-                            // Update the registerStudent function with better error handling and timeout
+                            // Replace the existing registerStudent function
 function registerStudent(form) {
     const formData = new FormData(form);
     const registrationData = {};
@@ -679,71 +699,59 @@ function registerStudent(form) {
     submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Registering...';
     submitBtn.disabled = true;
 
-    // Add timeout handling
-    const timeout = 15000; // 15 seconds timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-    
     // Send registration request
     fetch('../api/register-rfid.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(registrationData),
-        signal: controller.signal
+        body: JSON.stringify(registrationData)
     })
-    .then(response => {
-        clearTimeout(timeoutId);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Show success notification
-            Swal.fire({
-                icon: 'success',
-                title: 'Registration Successful!',
-                text: `Student ${data.data.student_name} has been registered successfully.`,
-                showConfirmButton: false,
-                timer: 1500
-            }).then(() => {
-                // Reset the form and scanner
-                form.reset();
-                resetScannerAfterRegistration();
-                
-                // Refresh attendance data
-                loadAttendanceData();
-                
-                // Restart scanning automatically
-                setTimeout(() => {
-                    startRFIDScan();
-                }, 500);
-            });
+            // Show success toast
+            Toastify({
+                text: `✅ Registration Successful!\nStudent: ${registrationData.first_name} ${registrationData.last_name}`,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                className: "success",
+                close: true,
+                stopOnFocus: true
+            }).showToast();
+
+            // Reset form
+            form.reset();
+            
+            // Reset scanner state
+            resetScannerState();
+            
+            // Refresh attendance records
+            loadAttendanceData();
+            
+            // Auto restart scanning
+            setTimeout(() => {
+                startRFIDScan();
+            }, 500);
         } else {
             throw new Error(data.message || 'Registration failed');
         }
     })
     .catch(error => {
-        let errorMessage = 'An error occurred during registration.';
-        
-        if (error.name === 'AbortError') {
-            errorMessage = 'Registration request timed out. Please try again.';
-        } else if (error.message) {
-            errorMessage = error.message;
-        }
-        
-        Swal.fire({
-            icon: 'error',
-            title: 'Registration Failed',
-            text: errorMessage,
-            confirmButtonColor: '#d33'
-        });
+        // Show error toast
+        Toastify({
+            text: `❌ Registration Failed!\n${error.message}`,
+            duration: 4000,
+            gravity: "top",
+            position: "right",
+            className: "error",
+            close: true,
+            stopOnFocus: true
+        }).showToast();
     })
     .finally(() => {
-        // Always reset button state
+        // Reset button state
         submitBtn.innerHTML = originalBtnText;
         submitBtn.disabled = false;
     });
@@ -751,18 +759,17 @@ function registerStudent(form) {
     return false; // Prevent form submission
 }
 
-// Add this helper function to reset the scanner state
-function resetScannerAfterRegistration() {
+// Add helper function for scanner state reset
+function resetScannerState() {
     const scanStatus = document.getElementById('scanStatus');
     const scanResult = document.getElementById('scanResult');
     
     scanStatus.innerHTML = `
-        <i class="fas fa-wifi scanner-icon text-primary"></i>
+        <i class="fas fa-wifi scanner-icon"></i>
         <h4 class="text-light mb-4">RFID Scanner Ready</h4>
         <p class="text-muted">Please scan your RFID card</p>
     `;
     
-    scanResult.innerHTML = '';
     scanResult.classList.add('d-none');
 }
                         </script>
@@ -973,7 +980,7 @@ function resetScannerAfterRegistration() {
                                             <option value="2nd Year">2nd Year</option>
                                             <option value="3rd Year">3rd Year</option>
                                             <option value="4th Year">4th Year</option>
-                                            <option value="5th Year">5th Year</option>
+                                            
                                         </select>
                                     </div>
                                 </div>
@@ -1173,71 +1180,59 @@ function resetScannerAfterRegistration() {
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Registering...';
             submitBtn.disabled = true;
 
-            // Add timeout handling
-            const timeout = 15000; // 15 seconds timeout
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), timeout);
-            
             // Send registration request
             fetch('../api/register-rfid.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(registrationData),
-                signal: controller.signal
+                body: JSON.stringify(registrationData)
             })
-            .then(response => {
-                clearTimeout(timeoutId);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Show success notification
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Registration Successful!',
-                        text: `Student ${data.data.student_name} has been registered successfully.`,
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        // Reset the form and scanner
-                        form.reset();
-                        resetScannerAfterRegistration();
-                        
-                        // Refresh attendance data
-                        loadAttendanceData();
-                        
-                        // Restart scanning automatically
-                        setTimeout(() => {
-                            startRFIDScan();
-                        }, 500);
-                    });
+                    // Show success toast
+                    Toastify({
+                        text: `✅ Registration Successful!\nStudent: ${registrationData.first_name} ${registrationData.last_name}`,
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        className: "success",
+                        close: true,
+                        stopOnFocus: true
+                    }).showToast();
+
+                    // Reset form
+                    form.reset();
+                    
+                    // Reset scanner state
+                    resetScannerState();
+                    
+                    // Refresh attendance records
+                    loadAttendanceData();
+                    
+                    // Auto restart scanning
+                    setTimeout(() => {
+                        startRFIDScan();
+                    }, 500);
                 } else {
                     throw new Error(data.message || 'Registration failed');
                 }
             })
             .catch(error => {
-                let errorMessage = 'An error occurred during registration.';
-                
-                if (error.name === 'AbortError') {
-                    errorMessage = 'Registration request timed out. Please try again.';
-                } else if (error.message) {
-                    errorMessage = error.message;
-                }
-                
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Registration Failed',
-                    text: errorMessage,
-                    confirmButtonColor: '#d33'
-                });
+                // Show error toast
+                Toastify({
+                    text: `❌ Registration Failed!\n${error.message}`,
+                    duration: 4000,
+                    gravity: "top",
+                    position: "right",
+                    className: "error",
+                    close: true,
+                    stopOnFocus: true
+                }).showToast();
             })
             .finally(() => {
-                // Always reset button state
+                // Reset button state
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
             });
