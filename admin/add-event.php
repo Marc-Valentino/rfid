@@ -140,8 +140,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $is_edit ? 'Edit' : 'Add New' ?> Event - <?php echo APP_NAME; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* Add this CSS to fix dropdown text color */
+        .form-select option {
+            color: #000000;
+        }
+        /* Ensure dropdown text is black when opened */
+        .form-select:focus option:checked {
+            color: #000000;
+            background: #e9ecef;
+        }
+        /* Fix for the dropdown arrow color in dark mode */
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        }
+        /* Ensure form controls have proper text color in dark mode */
+        .form-control, .form-select {
+            color: #212529;
+            background-color: #ffffff;
+        }
         body {
             background: #1a1a1a;
             color: #ffffff;
